@@ -1,0 +1,15 @@
+chisquare = 6.877772e+00
+params:
+log10(KAB) = 5.583e+00; 
+Enthalpy A-B = -1.629e+01; 
+
+gradient/chisquare:
+log10(KAB): 8.743e-02
+Enthalpy A-B: 4.408e-02
+
+
+ parameter (error), and cross correlation matrix {cov(i,j)/sqrt(cov(i,i)*cov(j,j))}
+                                                      	     	     log10(KAB)  	Enthalpy A	
+log10(KAB)                    : 	5.583e+00	(1.180e-01):	  1.000000	0.749164	
+Enthalpy A-B                  : 	-1.629e+01	(7.689e-01):	  0.749164	1.000000	
+ 

@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>ITC data of G3BP1-NTF2 binding to Caprin-1 and USP10</title>
+  <meta name="description" content="Analysis and visualization of isothermal titration calorimetry data" />
+  <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="ITC data of G3BP1-NTF2 binding to Caprin-1 and USP10" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Analysis and visualization of isothermal titration calorimetry data" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="ITC data of G3BP1-NTF2 binding to Caprin-1 and USP10" />
+  
+  <meta name="twitter:description" content="Analysis and visualization of isothermal titration calorimetry data" />
+  
+
+<meta name="author" content="[Tim Schulte]" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+<script>
+/* ========================================================================
+ * Bootstrap: transition.js v3.3.7
+ * http://getbootstrap.com/javascript/#transitions
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
+  // ============================================================
+
+  function transitionEnd() {
+    var el = document.createElement('bootstrap')
+
+    var transEndEventNames = {
+      WebkitTransition : 'webkitTransitionEnd',
+      MozTransition    : 'transitionend',
+      OTransition      : 'oTransitionEnd otransitionend',
+      transition       : 'transitionend'
+    }
+
+    for (var name in transEndEventNames) {
+      if (el.style[name] !== undefined) {
+        return { end: transEndEventNames[name] }
+      }
+    }
+
+    return false // explicit for ie8 (  ._.)
+  }
+
+  // http://blog.alexmaccaw.com/css-transitions
+  $.fn.emulateTransitionEnd = function (duration) {
+    var called = false
+    var $el = this
+    $(this).one('bsTransitionEnd', function () { called = true })
+    var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
+    setTimeout(callback, duration)
+    return this
+  }
+
+  $(function () {
+    $.support.transition = transitionEnd()
+
+    if (!$.support.transition) return
+
+    $.event.special.bsTransitionEnd = {
+      bindType: $.support.transition.end,
+      delegateType: $.support.transition.end,
+      handle: function (e) {
+        if ($(e.target).is(this)) return e.handleObj.handler.apply(this, arguments)
+      }
+    }
+  })
+
+}(jQuery);
+</script>
+<script>
+/* ========================================================================
+ * Bootstrap: collapse.js v3.3.7
+ * http://getbootstrap.com/javascript/#collapse
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+/* jshint latedef: false */
+
++function ($) {
+  'use strict';
+
+  // COLLAPSE PUBLIC CLASS DEFINITION
+  // ================================
+
+  var Collapse = function (element, options) {
+    this.$element      = $(element)
+    this.options       = $.extend({}, Collapse.DEFAULTS, options)
+    this.$trigger      = $('[data-toggle="collapse"][href="#' + element.id + '"],' +
+                           '[data-toggle="collapse"][data-target="#' + element.id + '"]')
+    this.transitioning = null
+
+    if (this.options.parent) {
+      this.$parent = this.getParent()
+    } else {
+      this.addAriaAndCollapsedClass(this.$element, this.$trigger)
+    }
+
+    if (this.options.toggle) this.toggle()
+  }
+
+  Collapse.VERSION  = '3.3.7'
+
+  Collapse.TRANSITION_DURATION = 350
+
+  Collapse.DEFAULTS = {
+    toggle: true
+  }
+
+  Collapse.prototype.dimension = function () {
+    var hasWidth = this.$element.hasClass('width')
+    return hasWidth ? 'width' : 'height'
+  }
+
+  Collapse.prototype.show = function () {
+    if (this.transitioning || this.$element.hasClass('in')) return
+
+    var activesData
+    var actives = this.$parent && this.$parent.children('.panel').children('.in, .collapsing')
+
+    if (actives && actives.length) {
+      activesData = actives.data('bs.collapse')
+      if (activesData && activesData.transitioning) return
+    }
+
+    var startEvent = $.Event('show.bs.collapse')
+    this.$element.trigger(startEvent)
+    if (startEvent.isDefaultPrevented()) return
+
+    if (actives && actives.length) {
+      Plugin.call(actives, 'hide')
+      activesData || actives.data('bs.collapse', null)
+    }
+
+    var dimension = this.dimension()
+
+    this.$element
+      .removeClass('collapse')
+      .addClass('collapsing')[dimension](0)
+      .attr('aria-expanded', true)
+
+    this.$trigger
+      .removeClass('collapsed')
+      .attr('aria-expanded', true)
+
+    this.transitioning = 1
+
+    var complete = function () {
+      this.$element
+        .removeClass('collapsing')
+        .addClass('collapse in')[dimension]('')
+      this.transitioning = 0
+      this.$element
+        .trigger('shown.bs.collapse')
+    }
+
+    if (!$.support.transition) return complete.call(this)
+
+    var scrollSize = $.camelCase(['scroll', dimension].join('-'))
+
+    this.$element
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)[dimension](this.$element[0][scrollSize])
+  }
+
+  Collapse.prototype.hide = function () {
+    if (this.transitioning || !this.$element.hasClass('in')) return
+
+    var startEvent = $.Event('hide.bs.collapse')
+    this.$element.trigger(startEvent)
+    if (startEvent.isDefaultPrevented()) return
+
+    var dimension = this.dimension()
+
+    this.$element[dimension](this.$element[dimension]())[0].offsetHeight
+
+    this.$element
+      .addClass('collapsing')
+      .removeClass('collapse in')
+      .attr('aria-expanded', false)
+
+    this.$trigger
+      .addClass('collapsed')
+      .attr('aria-expanded', false)
+
+    this.transitioning = 1
+
+    var complete = function () {
+      this.transitioning = 0
+      this.$element
+        .removeClass('collapsing')
+        .addClass('collapse')
+        .trigger('hidden.bs.collapse')
+    }
+
+    if (!$.support.transition) return complete.call(this)
+
+    this.$element
+      [dimension](0)
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)
+  }
+
+  Collapse.prototype.toggle = function () {
+    this[this.$element.hasClass('in') ? 'hide' : 'show']()
+  }
+
+  Collapse.prototype.getParent = function () {
+    return $(this.options.parent)
+      .find('[data-toggle="collapse"][data-parent="' + this.options.parent + '"]')
+      .each($.proxy(function (i, element) {
+        var $element = $(element)
+        this.addAriaAndCollapsedClass(getTargetFromTrigger($element), $element)
+      }, this))
+      .end()
+  }
+
+  Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) {
+    var isOpen = $element.hasClass('in')
+
+    $element.attr('aria-expanded', isOpen)
+    $trigger
+      .toggleClass('collapsed', !isOpen)
+      .attr('aria-expanded', isOpen)
+  }
+
+  function getTargetFromTrigger($trigger) {
+    var href
+    var target = $trigger.attr('data-target')
+      || (href = $trigger.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
+
+    return $(target)
+  }
+
+
+  // COLLAPSE PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.collapse')
+      var options = $.extend({}, Collapse.DEFAULTS, $this.data(), typeof option == 'object' && option)
+
+      if (!data && options.toggle && /show|hide/.test(option)) options.toggle = false
+      if (!data) $this.data('bs.collapse', (data = new Collapse(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.collapse
+
+  $.fn.collapse             = Plugin
+  $.fn.collapse.Constructor = Collapse
+
+
+  // COLLAPSE NO CONFLICT
+  // ====================
+
+  $.fn.collapse.noConflict = function () {
+    $.fn.collapse = old
+    return this
+  }
+
+
+  // COLLAPSE DATA-API
+  // =================
+
+  $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
+    var $this   = $(this)
+
+    if (!$this.attr('data-target')) e.preventDefault()
+
+    var $target = getTargetFromTrigger($this)
+    var data    = $target.data('bs.collapse')
+    var option  = data ? 'toggle' : $this.data()
+
+    Plugin.call($target, option)
+  })
+
+}(jQuery);
+</script>
+<script>
+window.initializeCodeFolding = function(show) {
+
+  // handlers for show-all and hide all
+  $("#rmd-show-all-code").click(function() {
+    // close the dropdown menu when an option is clicked
+    $("#allCodeButton").dropdown("toggle");
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('show');
+    });
+  });
+  $("#rmd-hide-all-code").click(function() {
+    // close the dropdown menu when an option is clicked
+    $("#allCodeButton").dropdown("toggle");
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('hide');
+    });
+  });
+
+  // index for unique code element ids
+  var currentIndex = 1;
+
+  // select all R code blocks
+  var rCodeBlocks = $('pre.sourceCode, pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan');
+  rCodeBlocks.each(function() {
+
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse r-code-collapse"></div>');
+    if (show)
+      div.addClass('in');
+    var id = 'rcode-643E0F36' + currentIndex++;
+    div.attr('id', id);
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+
+    // add a show code button right above
+    var showCodeText = $('<span>' + (show ? 'Hide' : 'Code') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs code-folding-btn pull-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-target', '#' + id)
+        .attr('aria-expanded', show)
+        .attr('aria-controls', id);
+
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+
+    div.before(buttonRow);
+
+    // update state of button on show/hide
+    div.on('hidden.bs.collapse', function () {
+      showCodeText.text('Code');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide');
+    });
+  });
+
+}
+</script>
+<script>
+/* ========================================================================
+ * Bootstrap: dropdown.js v3.3.7
+ * http://getbootstrap.com/javascript/#dropdowns
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // DROPDOWN CLASS DEFINITION
+  // =========================
+
+  var backdrop = '.dropdown-backdrop'
+  var toggle   = '[data-toggle="dropdown"]'
+  var Dropdown = function (element) {
+    $(element).on('click.bs.dropdown', this.toggle)
+  }
+
+  Dropdown.VERSION = '3.3.7'
+
+  function getParent($this) {
+    var selector = $this.attr('data-target')
+
+    if (!selector) {
+      selector = $this.attr('href')
+      selector = selector && /#[A-Za-z]/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
+    }
+
+    var $parent = selector && $(selector)
+
+    return $parent && $parent.length ? $parent : $this.parent()
+  }
+
+  function clearMenus(e) {
+    if (e && e.which === 3) return
+    $(backdrop).remove()
+    $(toggle).each(function () {
+      var $this         = $(this)
+      var $parent       = getParent($this)
+      var relatedTarget = { relatedTarget: this }
+
+      if (!$parent.hasClass('open')) return
+
+      if (e && e.type == 'click' && /input|textarea/i.test(e.target.tagName) && $.contains($parent[0], e.target)) return
+
+      $parent.trigger(e = $.Event('hide.bs.dropdown', relatedTarget))
+
+      if (e.isDefaultPrevented()) return
+
+      $this.attr('aria-expanded', 'false')
+      $parent.removeClass('open').trigger($.Event('hidden.bs.dropdown', relatedTarget))
+    })
+  }
+
+  Dropdown.prototype.toggle = function (e) {
+    var $this = $(this)
+
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    clearMenus()
+
+    if (!isActive) {
+      if ('ontouchstart' in document.documentElement && !$parent.closest('.navbar-nav').length) {
+        // if mobile we use a backdrop because click events don't delegate
+        $(document.createElement('div'))
+          .addClass('dropdown-backdrop')
+          .insertAfter($(this))
+          .on('click', clearMenus)
+      }
+
+      var relatedTarget = { relatedTarget: this }
+      $parent.trigger(e = $.Event('show.bs.dropdown', relatedTarget))
+
+      if (e.isDefaultPrevented()) return
+
+      $this
+        .trigger('focus')
+        .attr('aria-expanded', 'true')
+
+      $parent
+        .toggleClass('open')
+        .trigger($.Event('shown.bs.dropdown', relatedTarget))
+    }
+
+    return false
+  }
+
+  Dropdown.prototype.keydown = function (e) {
+    if (!/(38|40|27|32)/.test(e.which) || /input|textarea/i.test(e.target.tagName)) return
+
+    var $this = $(this)
+
+    e.preventDefault()
+    e.stopPropagation()
+
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    if (!isActive && e.which != 27 || isActive && e.which == 27) {
+      if (e.which == 27) $parent.find(toggle).trigger('focus')
+      return $this.trigger('click')
+    }
+
+    var desc = ' li:not(.disabled):visible a'
+    var $items = $parent.find('.dropdown-menu' + desc)
+
+    if (!$items.length) return
+
+    var index = $items.index(e.target)
+
+    if (e.which == 38 && index > 0)                 index--         // up
+    if (e.which == 40 && index < $items.length - 1) index++         // down
+    if (!~index)                                    index = 0
+
+    $items.eq(index).trigger('focus')
+  }
+
+
+  // DROPDOWN PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this = $(this)
+      var data  = $this.data('bs.dropdown')
+
+      if (!data) $this.data('bs.dropdown', (data = new Dropdown(this)))
+      if (typeof option == 'string') data[option].call($this)
+    })
+  }
+
+  var old = $.fn.dropdown
+
+  $.fn.dropdown             = Plugin
+  $.fn.dropdown.Constructor = Dropdown
+
+
+  // DROPDOWN NO CONFLICT
+  // ====================
+
+  $.fn.dropdown.noConflict = function () {
+    $.fn.dropdown = old
+    return this
+  }
+
+
+  // APPLY TO STANDARD DROPDOWN ELEMENTS
+  // ===================================
+
+  $(document)
+    .on('click.bs.dropdown.data-api', clearMenus)
+    .on('click.bs.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
+    .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
+    .on('keydown.bs.dropdown.data-api', toggle, Dropdown.prototype.keydown)
+    .on('keydown.bs.dropdown.data-api', '.dropdown-menu', Dropdown.prototype.keydown)
+
+}(jQuery);
+</script>
+<style type="text/css">
+.code-folding-btn {
+  margin-bottom: 4px;
+}
+
+.row { display: flex; }
+.collapse { display: none; }
+.in { display:block }
+.pull-right > .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    font-size: 14px;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+
+.open > .dropdown-menu {
+    display: block;
+    color: #ffffff;
+    background-color: #ffffff;
+    background-image: none;
+    border-color: #92897e;
+}
+
+.dropdown-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #e95420;
+}
+
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #e95420;
+  outline: 0;
+}
+.dropdown-menu > .disabled > a,
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+  color: #aea79f;
+}
+
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+
+.btn {
+  display: inline-block;
+  margin-bottom: 1;
+  font-weight: normal;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.btn:hover,
+.btn:focus,
+.btn.focus {
+  color: #ffffff;
+  text-decoration: none;
+}
+.btn:active,
+.btn.active {
+  background-image: none;
+  outline: 0;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn.disabled,
+.btn[disabled],
+fieldset[disabled] .btn {
+  cursor: not-allowed;
+  filter: alpha(opacity=65);
+  opacity: 0.65;
+  box-shadow: none;
+}
+a.btn.disabled,
+fieldset[disabled] a.btn {
+  pointer-events: none;
+}
+.btn-default {
+  color: #ffffff;
+  background-color: #aea79f; #important
+  border-color: #aea79f;
+}
+
+.btn-default:focus,
+.btn-default.focus {
+  color: #ffffff;
+  background-color: #978e83;
+  border-color: #6f675e;
+}
+
+.btn-default:hover {
+  color: #ffffff;
+  background-color: #978e83;
+  border-color: #92897e;
+}
+.btn-default:active,
+.btn-default.active,
+.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+  border-radius: 0;
+}
+.btn-group > .btn:first-child {
+  margin-left: 0;
+}
+.btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.btn-group > .btn:last-child:not(:first-child),
+.btn-group > .dropdown-toggle:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.btn-group > .btn-group {
+  float: left;
+}
+.btn-group > .btn-group:not(:first-child):not(:last-child) > .btn {
+  border-radius: 0;
+}
+.btn-group > .btn-group:first-child:not(:last-child) > .btn:last-child,
+.btn-group > .btn-group:first-child:not(:last-child) > .dropdown-toggle {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.btn-group > .btn-group:last-child:not(:first-child) > .btn:first-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.btn-group .dropdown-toggle:active,
+.btn-group.open .dropdown-toggle {
+  outline: 0;
+}
+.btn-group > .btn + .dropdown-toggle {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+.btn-group > .btn-lg + .dropdown-toggle {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+.btn-group.open .dropdown-toggle {
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-group.open .dropdown-toggle.btn-link {
+  box-shadow: none;
+}
+
+</style>
+<script>
+var str = '<div class="btn-group pull-right" style="position: fixed; right: 50px; top: 10px; z-index: 200"><button type="button" class="btn btn-default btn-xs dropdown-toggle" id="allCodeButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-_extension-text-contrast=""><span>Code</span> <span class="caret"></span></button><ul class="dropdown-menu" style="min-width: 50px;"><li><a id="rmd-show-all-code" href="#">Show All Code</a></li><li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li></ul></div>';
+document.write(str);
+</script>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "hide");
+});
+</script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">ITC data analysis</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path=""><a href="#info-about-itc-analysis-script"><i class="fa fa-check"></i><b>1</b> Info about ITC analysis script</a></li>
+<li class="chapter" data-level="2" data-path=""><a href="#load-libraries"><i class="fa fa-check"></i><b>2</b> Load libraries</a></li>
+<li class="chapter" data-level="3" data-path=""><a href="#visualization-of-itc-data"><i class="fa fa-check"></i><b>3</b> Visualization of ITC data</a><ul>
+<li class="chapter" data-level="3.1" data-path=""><a href="#import-the-data"><i class="fa fa-check"></i><b>3.1</b> Import the data</a></li>
+<li class="chapter" data-level="3.2" data-path=""><a href="#itc-thermograms"><i class="fa fa-check"></i><b>3.2</b> ITC thermograms</a></li>
+<li class="chapter" data-level="3.3" data-path=""><a href="#global-sedphat-fit-plots"><i class="fa fa-check"></i><b>3.3</b> Global sedphat fit plots</a></li>
+<li class="chapter" data-level="3.4" data-path=""><a href="#d-error-surface"><i class="fa fa-check"></i><b>3.4</b> 2D error surface</a></li>
+<li class="chapter" data-level="3.5" data-path=""><a href="#comparison-of-dh-and-kd-values-obtained-for-the-itc-datasets"><i class="fa fa-check"></i><b>3.5</b> Comparison of dH and Kd values obtained for the ITC datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path=""><a href="#comparison-to-bli-and-nanodsf"><i class="fa fa-check"></i><b>4</b> Comparison to BLI and nanoDSF</a><ul>
+<li class="chapter" data-level="4.1" data-path=""><a href="#comparison-of-affinities-obtained-from-itc-bli-and-nanodsf."><i class="fa fa-check"></i><b>4.1</b> Comparison of affinities obtained from ITC, BLI and nanoDSF.</a></li>
+<li class="chapter" data-level="4.2" data-path=""><a href="#result-table"><i class="fa fa-check"></i><b>4.2</b> Result table</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">ITC data of G3BP1-NTF2 binding to Caprin-1 and USP10</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="header">
+<h1 class="title">ITC data of G3BP1-NTF2 binding to Caprin-1 and USP10</h1>
+<p class="author"><em>[Tim Schulte]</em></p>
+</div>
+<div id="info-about-itc-analysis-script" class="section level1 hasAnchor">
+<h1><span class="header-section-number">1</span> Info about ITC analysis script<a href="#info-about-itc-analysis-script" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>ITC data associated with <a href="to%20be%20linked">Caprin-1 binding to the critical stress granule protein G3BP1 is influenced by pH</a>. Data were first analyzed using the Malvern <a href="https://www.malvernpanalytical.com/en/learn/knowledge-center/user-manuals/MAN0576EN">software</a>. Final global fits were obtained using <a href="https://www.utsouthwestern.edu/labs/mbr/software/">NITPIC</a> and <a href="http://www.analyticalultracentrifugation.com/sedphat/">SEDPHAT</a>.<br />
+This script was only used to generate the figures for the manuscript.</p>
+</div>
+<div id="load-libraries" class="section level1 hasAnchor">
+<h1><span class="header-section-number">2</span> Load libraries<a href="#load-libraries" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(plyr)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(tidyr)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">library</span>(stringr)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">library</span>(ggforce)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">library</span>(readr)</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">library</span>(ggsci)</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">library</span>(knitr)</span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">library</span>(bookdown)</span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="kw">library</span>(tinytex)</span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="kw">library</span>(kableExtra)</span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="kw">library</span>(DT)</span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="kw">library</span>(xfun)</span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="kw">library</span>(readxl)</span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="kw">library</span>(vroom)</span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="kw">library</span>(metR)</span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="kw">library</span>(reshape2)</span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="kw">library</span>(misc3d)</span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="kw">library</span>(ggforce)</span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="kw">library</span>(RColorBrewer)</span>
+<span id="cb1-22"><a href="#cb1-22"></a><span class="kw">library</span>(ggpubr)</span>
+<span id="cb1-23"><a href="#cb1-23"></a><span class="kw">library</span>(bsts)</span>
+<span id="cb1-24"><a href="#cb1-24"></a><span class="kw">library</span>(prospectr)</span>
+<span id="cb1-25"><a href="#cb1-25"></a><span class="kw">library</span>(ggridges)</span>
+<span id="cb1-26"><a href="#cb1-26"></a><span class="kw">library</span>(svglite)</span></code></pre></div>
+</div>
+<div id="visualization-of-itc-data" class="section level1 hasAnchor">
+<h1><span class="header-section-number">3</span> Visualization of ITC data<a href="#visualization-of-itc-data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>The nitpic-processed data were saved and opened in Sedphat for global fitting. The fitted data were saved using the option “copy all data and save as new config” as well as by copying the data and data fit tables into Excel sheets. Two-dimensional error-surface projections and covariance matrices were saved as text files.</p>
+<div id="import-the-data" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.1</span> Import the data<a href="#import-the-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>nitpiclist_itc =<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">path =</span> <span class="st">&quot;./nitpic_sedphat_output&quot;</span>, <span class="dt">pattern =</span> <span class="st">&quot;*&quot;</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">include.dirs =</span> <span class="ot">TRUE</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>nitpiclist_itc.tib &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(nitpiclist_itc)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>nitpiclist_itc.all &lt;-<span class="st"> </span>nitpiclist_itc.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datatype =</span> <span class="kw">str_extract</span>(value, <span class="st">&quot;Covariance|dHvsKab|xls|data.txt|error.txt|fit.txt|</span><span class="ch">\\</span><span class="st">.nitpic|error-dat|confidence|(.xp)$&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(datatype) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datatype_corr =</span> <span class="kw">str_extract</span>(datatype, <span class="st">&quot;Covariance|dHvsKab|xls|nitpic|error-dat|data.txt|error.txt|fit.txt|confidence|xp&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">-</span>datatype) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., value, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;toptopfolger&quot;</span>, <span class="st">&quot;topfolder&quot;</span>, <span class="st">&quot;sedfolder&quot;</span>, <span class="st">&quot;subfolder&quot;</span>, <span class="st">&quot;dataname&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;/&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">detect_sym =</span> <span class="kw">str_detect</span>(subfolder, <span class="st">&quot;(^[:symbol:])|^[:punct:]&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">deleteme =</span> <span class="kw">case_when</span>(datatype_corr <span class="op">==</span><span class="st">&quot;xp&quot;</span> <span class="op">&amp;</span><span class="st"> </span>detect_sym <span class="op">==</span><span class="st"> &quot;TRUE&quot;</span> <span class="op">~</span><span class="st"> &quot;TRUE&quot;</span>, <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;FALSE&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., deleteme <span class="op">!=</span><span class="st"> &quot;TRUE&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;toptopfolger&quot;</span>, <span class="st">&quot;topfolder&quot;</span>, <span class="st">&quot;sedfolder&quot;</span>))</span>
+<span id="cb2-4"><a href="#cb2-4"></a></span>
+<span id="cb2-5"><a href="#cb2-5"></a>vroom_pipe_f &lt;-<span class="st"> </span><span class="cf">function</span>(grepvalue, colnames){</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  out &lt;-<span class="st"> </span><span class="kw">vroom</span>(<span class="kw">pipe</span>(grepvalue), <span class="dt">col_names =</span> colnames)</span>
+<span id="cb2-7"><a href="#cb2-7"></a>  <span class="kw">return</span>(out)</span>
+<span id="cb2-8"><a href="#cb2-8"></a>}</span>
+<span id="cb2-9"><a href="#cb2-9"></a></span>
+<span id="cb2-10"><a href="#cb2-10"></a>vroom_pipe_basic_f &lt;-<span class="st"> </span><span class="cf">function</span>(grepvalue){</span>
+<span id="cb2-11"><a href="#cb2-11"></a>  out &lt;-<span class="st"> </span><span class="kw">vroom</span>(<span class="kw">pipe</span>(grepvalue), <span class="dt">delim=</span><span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="kw">return</span>(out)</span>
+<span id="cb2-13"><a href="#cb2-13"></a>}</span>
+<span id="cb2-14"><a href="#cb2-14"></a></span>
+<span id="cb2-15"><a href="#cb2-15"></a></span>
+<span id="cb2-16"><a href="#cb2-16"></a>addinjectionnumbers_f &lt;-<span class="st"> </span><span class="cf">function</span>(df1, df2){</span>
+<span id="cb2-17"><a href="#cb2-17"></a>  df1_out &lt;-<span class="st"> </span>df1 <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">id =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="dt">length.out =</span> <span class="kw">length</span>(heat))) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">-</span>heat) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., id <span class="op">&lt;</span><span class="st"> </span><span class="dv">2</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">injnumber =</span> <span class="kw">row_number</span>()) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">-</span>id)</span>
+<span id="cb2-18"><a href="#cb2-18"></a>  df_out &lt;-<span class="st"> </span>df2 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., df1_out) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">fill</span>(., injnumber, <span class="dt">.direction =</span> <span class="kw">c</span>(<span class="st">&quot;down&quot;</span>))</span>
+<span id="cb2-19"><a href="#cb2-19"></a>  <span class="kw">return</span>(df_out)</span>
+<span id="cb2-20"><a href="#cb2-20"></a>}</span>
+<span id="cb2-21"><a href="#cb2-21"></a></span>
+<span id="cb2-22"><a href="#cb2-22"></a>filter_time_f &lt;-<span class="st"> </span><span class="cf">function</span>(df_data, df_time){</span>
+<span id="cb2-23"><a href="#cb2-23"></a>  df_data_out &lt;-<span class="st"> </span>df_data <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., time <span class="op">&lt;</span><span class="st"> </span>df_time)</span>
+<span id="cb2-24"><a href="#cb2-24"></a>}</span>
+<span id="cb2-25"><a href="#cb2-25"></a></span>
+<span id="cb2-26"><a href="#cb2-26"></a>change_nitpic_dH_f &lt;-<span class="st"> </span><span class="cf">function</span>(df){</span>
+<span id="cb2-27"><a href="#cb2-27"></a>  df_out &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(., NDH) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate_if</span>(., is.character, as.numeric)</span>
+<span id="cb2-28"><a href="#cb2-28"></a>  <span class="kw">return</span>(df_out)</span>
+<span id="cb2-29"><a href="#cb2-29"></a>}</span>
+<span id="cb2-30"><a href="#cb2-30"></a></span>
+<span id="cb2-31"><a href="#cb2-31"></a>extract_itcconcentrations_f &lt;-<span class="st"> </span><span class="cf">function</span>(df){</span>
+<span id="cb2-32"><a href="#cb2-32"></a>  df_out &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">Vx =</span> <span class="kw">sum</span>(INVJ), <span class="dt">Xt =</span> <span class="kw">last</span>(Xt), <span class="dt">Mi =</span> <span class="kw">first</span>(Mt), <span class="dt">Mt =</span> <span class="kw">last</span>(Mt)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">Xi =</span> ((Vx<span class="op">+</span><span class="dv">200</span>)<span class="op">/</span>Vx)<span class="op">*</span>Xt) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., Mi) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">Mi =</span> Mi<span class="op">*</span><span class="dv">1000</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>()</span>
+<span id="cb2-33"><a href="#cb2-33"></a>  <span class="kw">return</span>(df_out)</span>
+<span id="cb2-34"><a href="#cb2-34"></a>}</span>
+<span id="cb2-35"><a href="#cb2-35"></a></span>
+<span id="cb2-36"><a href="#cb2-36"></a>nitpic_itcdata.nit &lt;-<span class="st"> </span>nitpiclist_itc.all <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., datatype_corr <span class="op">==</span><span class="st"> &quot;nitpic&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">nitpic =</span> <span class="kw">str_detect</span>(dataname, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.nitpic&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., nitpic <span class="op">==</span><span class="st"> &quot;TRUE&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., dataname, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;ntf2_type&quot;</span>, <span class="st">&quot;PH&quot;</span>, <span class="st">&quot;ligand&quot;</span>, <span class="st">&quot;lig_type&quot;</span>, <span class="st">&quot;datasetid&quot;</span>, <span class="st">&quot;cconc&quot;</span>, <span class="st">&quot;sconc&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>cconc, <span class="op">-</span>sconc) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">grepvalue =</span> <span class="kw">paste</span>(<span class="st">&quot;grep -A 10000 CORRECTED &quot;</span>, value, <span class="st">&quot;| grep -v INJECTION | grep -v CORRECT&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>), <span class="dt">injections =</span>  <span class="kw">paste</span>(<span class="st">&quot;grep -A 10000 CORRECTED &quot;</span>, value, <span class="st">&quot; | grep -A 1 -B 1 INJECTION | grep -v INJECTION | grep [[:digit:]]&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>), <span class="dt">colnames =</span> <span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;time&quot;</span>, <span class="st">&quot;heat&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(grepvalue, colnames),vroom_pipe_f), <span class="dt">injectionslist =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(injections, colnames),vroom_pipe_f))</span>
+<span id="cb2-37"><a href="#cb2-37"></a></span>
+<span id="cb2-38"><a href="#cb2-38"></a>nitpic_itcdata_cellconc.nit &lt;-<span class="st"> </span>nitpic_itcdata.nit <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;grepvalue&quot;</span>, <span class="st">&quot;injections&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">grepvalue =</span> <span class="kw">paste</span>(<span class="st">&quot;grep -A 30 DH &quot;</span>, value, <span class="st">&quot; | grep -B 30 BEGIN&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data_nitfit_temp =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(grepvalue),vroom_pipe_basic_f)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data_nitfit =</span> purrr<span class="op">::</span><span class="kw">map</span>(data_nitfit_temp, <span class="op">~</span><span class="kw">change_nitpic_dH_f</span>(.))) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">nit_conc =</span> purrr<span class="op">::</span><span class="kw">map</span>(data_nitfit, <span class="op">~</span><span class="kw">extract_itcconcentrations_f</span>(.))) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., dataname, nit_conc) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., nit_conc)</span>
+<span id="cb2-39"><a href="#cb2-39"></a></span>
+<span id="cb2-40"><a href="#cb2-40"></a></span>
+<span id="cb2-41"><a href="#cb2-41"></a>nitpic_itcdata_injections.nit &lt;-<span class="st"> </span>nitpic_itcdata.nit <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;subfolder&quot;</span>, <span class="st">&quot;datatype_corr&quot;</span>, <span class="st">&quot;nitpic&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">injectionslistid =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(injectionslist, data), addinjectionnumbers_f))</span>
+<span id="cb2-42"><a href="#cb2-42"></a></span>
+<span id="cb2-43"><a href="#cb2-43"></a><span class="co">##&quot; script includes some case_when pipes to generate groups for plotting</span></span>
+<span id="cb2-44"><a href="#cb2-44"></a></span>
+<span id="cb2-45"><a href="#cb2-45"></a>plotgroup_tribble &lt;-<span class="st"> </span>nitpic_itcdata_injections.nit <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datasetid =</span> <span class="kw">str_extract</span>(datasetid, <span class="st">&quot;[:digit:]&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., ntf2_type, PH, ligand, <span class="dt">lig_type_corr =</span> lig_type, datasetid, data, injectionslistid) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">folder =</span> <span class="kw">paste</span>(ntf2_type, PH, ligand, lig_type_corr, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">plotgroup =</span> <span class="kw">case_when</span>(ntf2_type <span class="op">==</span><span class="st"> &quot;NTF2WT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>lig_type_corr <span class="op">==</span><span class="st"> &quot;WT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>PH <span class="op">==</span><span class="st"> &quot;PH75&quot;</span> <span class="op">~</span><span class="st"> &quot;G0_MUT0&quot;</span>, ntf2_type <span class="op">==</span><span class="st"> &quot;NTF2WT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>ligand <span class="op">==</span><span class="st"> &quot;CAP&quot;</span> <span class="op">&amp;</span><span class="st"> </span>lig_type_corr <span class="op">==</span><span class="st"> &quot;L9A&quot;</span> <span class="op">&amp;</span><span class="st"> </span>PH <span class="op">==</span><span class="st"> &quot;PH75&quot;</span> <span class="op">~</span><span class="st"> &quot;G0_MUT2&quot;</span>,ntf2_type <span class="op">==</span><span class="st"> &quot;NTF2WT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>ligand <span class="op">==</span><span class="st"> &quot;CAP&quot;</span> <span class="op">&amp;</span><span class="st"> </span>lig_type_corr <span class="op">==</span><span class="st"> &quot;F3AL9A&quot;</span> <span class="op">&amp;</span><span class="st"> </span>PH <span class="op">==</span><span class="st"> &quot;PH75&quot;</span> <span class="op">~</span><span class="st"> &quot;G0_MUT1&quot;</span>,ntf2_type <span class="op">==</span><span class="st"> &quot;NTF2WT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>ligand <span class="op">==</span><span class="st"> &quot;USP&quot;</span> <span class="op">&amp;</span><span class="st"> </span>lig_type_corr <span class="op">==</span><span class="st"> &quot;F3AF6A&quot;</span> <span class="op">&amp;</span><span class="st"> </span>PH <span class="op">==</span><span class="st"> &quot;PH75&quot;</span> <span class="op">~</span><span class="st"> &quot;G0_MUT1&quot;</span>,ntf2_type <span class="op">==</span><span class="st"> &quot;H31A&quot;</span> <span class="op">&amp;</span><span class="st"> </span>lig_type_corr <span class="op">==</span><span class="st"> &quot;WT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>PH <span class="op">==</span><span class="st"> &quot;PH75&quot;</span> <span class="op">~</span><span class="st"> &quot;G1_MUT0&quot;</span>, ntf2_type <span class="op">==</span><span class="st"> &quot;NTF2YY&quot;</span> <span class="op">&amp;</span><span class="st"> </span>lig_type_corr <span class="op">==</span><span class="st"> &quot;WT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>PH <span class="op">==</span><span class="st"> &quot;PH75&quot;</span> <span class="op">~</span><span class="st"> &quot;G2_MUT0&quot;</span>, ntf2_type <span class="op">==</span><span class="st"> &quot;NTF2WT&quot;</span> <span class="op">&amp;</span><span class="st"> </span>PH <span class="op">==</span><span class="st"> &quot;PH56&quot;</span> <span class="op">~</span><span class="st"> &quot;G3_MUT0&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., plotgroup, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;plotgroup1&quot;</span>, <span class="st">&quot;plotgroup2&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datasetidname =</span> <span class="kw">paste</span>(folder, datasetid, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datasetid =</span> <span class="kw">as.integer</span>(datasetid))</span>
+<span id="cb2-46"><a href="#cb2-46"></a></span>
+<span id="cb2-47"><a href="#cb2-47"></a>nitpic_itcdata_nit_mod.tib &lt;-<span class="st"> </span>nitpic_itcdata_injections.nit <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datasetid =</span> <span class="kw">str_extract</span>(datasetid, <span class="st">&quot;[:digit:]&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datasetid =</span> <span class="kw">as.integer</span>(datasetid)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., dataname, ntf2_type, PH, ligand, <span class="dt">lig_type_corr =</span> lig_type, datasetid, data, injectionslistid) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">folder =</span> <span class="kw">paste</span>(ntf2_type, PH, ligand, lig_type_corr, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., plotgroup_tribble) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">filtertime =</span> <span class="kw">case_when</span>(datasetidname <span class="op">==</span><span class="st"> &quot;NTF2WT_PH56_USP_WT_2&quot;</span> <span class="op">~</span><span class="st"> </span><span class="dv">2400</span>, <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="dv">3600</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data_filtered =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(data, filtertime), filter_time_f))</span>
+<span id="cb2-48"><a href="#cb2-48"></a></span>
+<span id="cb2-49"><a href="#cb2-49"></a>nitpic_itcdata_confvalues.tib &lt;-<span class="st"> </span>nitpiclist_itc.all <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., datatype_corr <span class="op">==</span><span class="st"> &quot;confidence&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data =</span> purrr<span class="op">::</span><span class="kw">map</span>(value, <span class="op">~</span><span class="kw">vroom</span>(., <span class="dt">delim =</span> <span class="st">&quot; &quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., data) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;value&quot;</span>, <span class="st">&quot;datatype_corr&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., <span class="st">&quot;DATASET&quot;</span>, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;folder&quot;</span>, <span class="st">&quot;dropme&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;dropme&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., folder, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;ntf2_type&quot;</span>, <span class="st">&quot;PH&quot;</span>, <span class="st">&quot;ligand&quot;</span>, <span class="st">&quot;lig_type_corr&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">KD =</span> <span class="dv">10</span><span class="op">^</span>(<span class="op">-</span>KA<span class="op">+</span><span class="dv">9</span>),<span class="dt">KDmin =</span> <span class="dv">10</span><span class="op">^</span>(<span class="op">-</span>KAmin<span class="op">+</span><span class="dv">9</span>),<span class="dt">KDmax =</span> <span class="dv">10</span><span class="op">^</span>(<span class="op">-</span>KAmax<span class="op">+</span><span class="dv">9</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">Hsigma =</span>  (((dH<span class="op">-</span>dHmin)<span class="op">^</span><span class="dv">2</span><span class="op">+</span>(dH<span class="op">-</span>dHmax)<span class="op">^</span><span class="dv">2</span>)<span class="op">/</span><span class="dv">2</span>)<span class="op">^</span><span class="fl">0.5</span>, <span class="dt">Ksigma =</span>  (((KD<span class="op">-</span>KDmin)<span class="op">^</span><span class="dv">2</span><span class="op">+</span>(KD<span class="op">-</span>KDmax)<span class="op">^</span><span class="dv">2</span>)<span class="op">/</span><span class="dv">2</span>)<span class="op">^</span><span class="fl">0.5</span>)</span>
+<span id="cb2-50"><a href="#cb2-50"></a></span>
+<span id="cb2-51"><a href="#cb2-51"></a>nitpic_itcdata_confvalues_sel.tib &lt;-<span class="st"> </span>nitpic_itcdata_confvalues.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="kw">c</span>(<span class="st">&quot;folder&quot;</span>, <span class="st">&quot;ntf2_type&quot;</span>, <span class="st">&quot;PH&quot;</span>, <span class="st">&quot;ligand&quot;</span>, <span class="st">&quot;lig_type_corr&quot;</span>, <span class="st">&quot;KD&quot;</span>, <span class="st">&quot;Ksigma&quot;</span>, <span class="st">&quot;dH&quot;</span>, <span class="st">&quot;Hsigma&quot;</span>))</span></code></pre></div>
+</div>
+<div id="itc-thermograms" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.2</span> ITC thermograms<a href="#itc-thermograms" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>nitpic_itcdata_nit_preplot.tib &lt;-<span class="st"> </span>nitpic_itcdata_nit_mod.tib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., nitpic_itcdata_cellconc.nit)  <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">-</span>data, <span class="op">-</span>injectionslistid) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., ligand, plotgroup, nit_conc) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datasetid2 =</span> <span class="kw">row_number</span>(plotgroup1)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., data_filtered)</span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a>nitpic_itcdata_nit_plot &lt;-<span class="st"> </span>nitpic_itcdata_nit_preplot.tib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> time, <span class="dt">y =</span> heat, <span class="dt">group =</span> datasetidname, <span class="dt">colour =</span> <span class="kw">factor</span>(plotgroup2))) <span class="op">+</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="st">  </span><span class="co">#geom_line(aes(colour = factor(MLfitcorr))) +</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="st">  </span><span class="co">#geom_point() +</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">0.4</span>) <span class="op">+</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="st">  </span><span class="kw">scale_color_aaas</span>() <span class="op">+</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="st">&quot;time: min&quot;</span>, <span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1800</span>, <span class="dv">3600</span>), <span class="dt">labels =</span> <span class="cf">function</span>(breaks) ((breaks<span class="op">/</span><span class="dv">60</span>))) <span class="op">+</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="st">&quot;observed heat: ucal/s&quot;</span>) <span class="op">+</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="st">  </span><span class="co">#coord_cartesian(ylim = c(-0.8, 0.1)) +</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) <span class="op">+</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="st">  </span><span class="kw">facet_grid</span>(plotgroup1<span class="op">+</span>nit_conc <span class="op">~</span><span class="st"> </span>ligand<span class="op">+</span>plotgroup2<span class="op">+</span>datasetid2, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>)</span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_nitpic_ggplot.jpeg&quot;</span>, nitpic_itcdata_nit_plot, <span class="dt">device =</span> <span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">120</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_nitpic_ggplot.ps&quot;</span>, nitpic_itcdata_nit_plot, <span class="dt">device =</span> <span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">120</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb3-16"><a href="#cb3-16"></a></span>
+<span id="cb3-17"><a href="#cb3-17"></a><span class="co">#print(nitpic_itcdata_nit_plot)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>theme_light_arial &lt;-<span class="st"> </span><span class="cf">function</span>(){</span>
+<span id="cb4-2"><a href="#cb4-2"></a>  font &lt;-<span class="st"> &quot;Arial&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="kw">theme_light</span>() <span class="op">%+replace%</span><span class="st"> </span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="st">    </span><span class="kw">theme</span>(<span class="dt">text =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="kw">rel</span>(<span class="fl">1.5</span>)))</span>
+<span id="cb4-5"><a href="#cb4-5"></a>}</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a></span>
+<span id="cb4-8"><a href="#cb4-8"></a>modify_plot_panel_order &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>ligand, <span class="op">~</span>plotgroup1, <span class="op">~</span>plotgroup2, <span class="op">~</span>datasetid2, <span class="op">~</span>nit_conc, <span class="op">~</span>panelid, <span class="op">~</span>concid,</span>
+<span id="cb4-9"><a href="#cb4-9"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G0&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">1</span>, <span class="dv">20</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb4-10"><a href="#cb4-10"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G0&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">1</span>, <span class="dv">25</span>, <span class="dv">1</span>, <span class="dv">2</span>,</span>
+<span id="cb4-11"><a href="#cb4-11"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G0&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">2</span>, <span class="dv">25</span>, <span class="dv">2</span>, <span class="dv">1</span>,</span>
+<span id="cb4-12"><a href="#cb4-12"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G0&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">3</span>, <span class="dv">25</span>, <span class="dv">2</span>, <span class="dv">2</span>,</span>
+<span id="cb4-13"><a href="#cb4-13"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G0&quot;</span>, <span class="st">&quot;MUT1&quot;</span>, <span class="dv">1</span>, <span class="dv">25</span>, <span class="dv">1</span>, <span class="dv">3</span>,</span>
+<span id="cb4-14"><a href="#cb4-14"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G0&quot;</span>, <span class="st">&quot;MUT2&quot;</span>, <span class="dv">1</span>, <span class="dv">25</span>, <span class="dv">2</span>, <span class="dv">3</span>,</span>
+<span id="cb4-15"><a href="#cb4-15"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G1&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">1</span>, <span class="dv">20</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb4-16"><a href="#cb4-16"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G1&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">2</span>, <span class="dv">20</span>, <span class="dv">1</span>, <span class="dv">2</span>,</span>
+<span id="cb4-17"><a href="#cb4-17"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G2&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">1</span>, <span class="dv">7</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb4-18"><a href="#cb4-18"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G2&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">1</span>, <span class="dv">2</span>,</span>
+<span id="cb4-19"><a href="#cb4-19"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G3&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">1</span>, <span class="fl">12.5</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb4-20"><a href="#cb4-20"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G3&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">2</span>, <span class="fl">12.5</span>, <span class="dv">1</span>, <span class="dv">2</span>,</span>
+<span id="cb4-21"><a href="#cb4-21"></a>                                   <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;G3&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">3</span>, <span class="fl">12.5</span>, <span class="dv">1</span>, <span class="dv">3</span>,</span>
+<span id="cb4-22"><a href="#cb4-22"></a>                                   <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;G0&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">1</span>, <span class="dv">25</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb4-23"><a href="#cb4-23"></a>                                   <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;G0&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">2</span>, <span class="dv">25</span>, <span class="dv">2</span>, <span class="dv">1</span>,</span>
+<span id="cb4-24"><a href="#cb4-24"></a>                                   <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;G0&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">3</span>, <span class="dv">25</span>, <span class="dv">2</span>, <span class="dv">2</span>,</span>
+<span id="cb4-25"><a href="#cb4-25"></a>                                   <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;G0&quot;</span>, <span class="st">&quot;MUT1&quot;</span>, <span class="dv">1</span>, <span class="dv">25</span>, <span class="dv">1</span>, <span class="dv">2</span>,</span>
+<span id="cb4-26"><a href="#cb4-26"></a>                                   <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;G1&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">1</span>, <span class="dv">20</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb4-27"><a href="#cb4-27"></a>                                   <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;G1&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">2</span>, <span class="dv">20</span>, <span class="dv">1</span>, <span class="dv">2</span>,</span>
+<span id="cb4-28"><a href="#cb4-28"></a>                                   <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;G2&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">1</span>, <span class="dv">15</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb4-29"><a href="#cb4-29"></a>                                   <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;G2&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">2</span>, <span class="dv">15</span>, <span class="dv">1</span>, <span class="dv">2</span>,</span>
+<span id="cb4-30"><a href="#cb4-30"></a>                                   <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;G3&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">1</span>, <span class="fl">12.5</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb4-31"><a href="#cb4-31"></a>                                   <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;G3&quot;</span>, <span class="st">&quot;MUT0&quot;</span>, <span class="dv">2</span>, <span class="fl">12.5</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb4-32"><a href="#cb4-32"></a></span>
+<span id="cb4-33"><a href="#cb4-33"></a>nitpic_itcdata_nit_plot2 &lt;-<span class="st"> </span>nitpic_itcdata_nit_preplot.tib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., modify_plot_panel_order) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> time, <span class="dt">y =</span> heat, <span class="dt">group =</span> datasetidname, <span class="dt">colour =</span> <span class="kw">factor</span>(plotgroup2))) <span class="op">+</span></span>
+<span id="cb4-34"><a href="#cb4-34"></a><span class="st">  </span><span class="co">#geom_line(aes(colour = factor(MLfitcorr))) +</span></span>
+<span id="cb4-35"><a href="#cb4-35"></a><span class="st">  </span><span class="co">#geom_point() +</span></span>
+<span id="cb4-36"><a href="#cb4-36"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="fl">0.4</span>) <span class="op">+</span></span>
+<span id="cb4-37"><a href="#cb4-37"></a><span class="st">  </span><span class="kw">scale_color_aaas</span>() <span class="op">+</span></span>
+<span id="cb4-38"><a href="#cb4-38"></a><span class="st">  </span><span class="kw">theme_light_arial</span>() <span class="op">+</span></span>
+<span id="cb4-39"><a href="#cb4-39"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="st">&quot;time: min&quot;</span>, <span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1800</span>, <span class="dv">3600</span>), <span class="dt">labels =</span> <span class="cf">function</span>(breaks) ((breaks<span class="op">/</span><span class="dv">60</span>))) <span class="op">+</span></span>
+<span id="cb4-40"><a href="#cb4-40"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="st">&quot;observed heat: ucal/s&quot;</span>, <span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="op">-</span><span class="fl">0.25</span>, <span class="fl">-0.5</span>, <span class="fl">-0.75</span>), <span class="dt">minor_breaks =</span> <span class="ot">NULL</span>) <span class="op">+</span></span>
+<span id="cb4-41"><a href="#cb4-41"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">3600</span>)) <span class="op">+</span></span>
+<span id="cb4-42"><a href="#cb4-42"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>, <span class="dt">axis.text =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="kw">rel</span>(<span class="fl">0.5</span>))) <span class="op">+</span></span>
+<span id="cb4-43"><a href="#cb4-43"></a><span class="st">  </span><span class="kw">facet_grid</span>(plotgroup1<span class="op">+</span>panelid <span class="op">~</span><span class="st"> </span>ligand<span class="op">+</span>concid, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>)</span>
+<span id="cb4-44"><a href="#cb4-44"></a><span class="kw">print</span>(nitpic_itcdata_nit_plot2)</span></code></pre></div>
+<p><img src="index_files/figure-html/plotNITPICdatareordered-1.png" width="672" /></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_nitpic_ggplot2.jpeg&quot;</span>, nitpic_itcdata_nit_plot2, <span class="dt">device =</span> <span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">120</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_nitpic_ggplot2.ps&quot;</span>, nitpic_itcdata_nit_plot2, <span class="dt">device =</span> <span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">120</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="msFigureS4" class="figure-box">
+<p>ITC thermograms, shown as Supplementary Figure S4A in ms. G0: NTF2-WT at pH 7.4, G1: H31A at pH 7.4, G2: H31YH62Y at pH 7.4, G3: NTF2-WT at pH 5.6.Not shown in manuscript.</p>
+</div>
+</div>
+<div id="global-sedphat-fit-plots" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.3</span> Global sedphat fit plots<a href="#global-sedphat-fit-plots" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>import_sedfit_f &lt;-<span class="st"> </span><span class="cf">function</span>(filename){</span>
+<span id="cb6-2"><a href="#cb6-2"></a>  out &lt;-<span class="st"> </span><span class="kw">vroom</span>(filename, <span class="dt">col_names =</span> <span class="kw">c</span>(<span class="st">&quot;MX&quot;</span>, <span class="st">&quot;NDH&quot;</span>))</span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="kw">return</span>(out)</span>
+<span id="cb6-4"><a href="#cb6-4"></a>}</span>
+<span id="cb6-5"><a href="#cb6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6"></a>baseline_fix_f &lt;-<span class="st"> </span><span class="cf">function</span>(df){</span>
+<span id="cb6-7"><a href="#cb6-7"></a>  df_out &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">vroom</span>(., <span class="dt">col_names =</span> <span class="kw">c</span>(<span class="st">&quot;exp&quot;</span>, <span class="st">&quot;base&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datasetid =</span> <span class="kw">paste</span>(<span class="st">&quot;exp0&quot;</span>, exp, <span class="dt">sep =</span><span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(datasetid, base)</span>
+<span id="cb6-8"><a href="#cb6-8"></a>  <span class="kw">return</span>(df_out)</span>
+<span id="cb6-9"><a href="#cb6-9"></a>}</span>
+<span id="cb6-10"><a href="#cb6-10"></a></span>
+<span id="cb6-11"><a href="#cb6-11"></a>seddata_base_f &lt;-<span class="st"> </span><span class="cf">function</span>(df, base){</span>
+<span id="cb6-12"><a href="#cb6-12"></a>  df_out &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">NDHbase =</span> NDH <span class="op">-</span><span class="st"> </span>base)</span>
+<span id="cb6-13"><a href="#cb6-13"></a>  <span class="kw">return</span>(df_out)</span>
+<span id="cb6-14"><a href="#cb6-14"></a>}</span>
+<span id="cb6-15"><a href="#cb6-15"></a></span>
+<span id="cb6-16"><a href="#cb6-16"></a>combine_data_error_fit_f &lt;-<span class="st"> </span><span class="cf">function</span>(data, error, fit){</span>
+<span id="cb6-17"><a href="#cb6-17"></a>  data_out &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="dt">MXd =</span> MX, <span class="dt">NDHd =</span> NDH)</span>
+<span id="cb6-18"><a href="#cb6-18"></a>  error_out &lt;-<span class="st"> </span>error <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="dt">NDHp =</span> MX, <span class="dt">NDHm =</span> NDH)</span>
+<span id="cb6-19"><a href="#cb6-19"></a>  fit_out &lt;-<span class="st"> </span>fit <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="dt">MXf =</span> MX, <span class="dt">NDHf =</span> NDH)</span>
+<span id="cb6-20"><a href="#cb6-20"></a>  df_out &lt;-<span class="st"> </span>data_out <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">add_column</span>(., error_out) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">add_column</span>(., fit_out)</span>
+<span id="cb6-21"><a href="#cb6-21"></a>  <span class="kw">return</span>(df_out)</span>
+<span id="cb6-22"><a href="#cb6-22"></a>}</span>
+<span id="cb6-23"><a href="#cb6-23"></a></span>
+<span id="cb6-24"><a href="#cb6-24"></a>sedlist_itc_txt &lt;-<span class="st"> </span>nitpiclist_itc.all <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., value, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;toptop&quot;</span>, <span class="st">&quot;topfolder&quot;</span>, <span class="st">&quot;dataname&quot;</span>, <span class="st">&quot;datatype&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;/&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., dataname, <span class="kw">c</span>(<span class="st">&quot;ntf2_type&quot;</span>, <span class="st">&quot;PH&quot;</span>, <span class="st">&quot;ligand&quot;</span>, <span class="st">&quot;lig_type0&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., lig_type0, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;lig_type&quot;</span>, <span class="st">&quot;xls&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., datatype_corr <span class="op">==</span><span class="st"> &quot;data.txt&quot;</span> <span class="op">|</span><span class="st"> </span>datatype_corr <span class="op">==</span><span class="st"> &quot;error.txt&quot;</span> <span class="op">|</span><span class="st"> </span>datatype_corr <span class="op">==</span><span class="st"> &quot;fit.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datasetid =</span> <span class="kw">str_extract</span>(datatype, <span class="st">&quot;exp[:digit:][:digit:]&quot;</span>)) </span>
+<span id="cb6-25"><a href="#cb6-25"></a></span>
+<span id="cb6-26"><a href="#cb6-26"></a>sedlist_itc_txt_fit.tib &lt;-<span class="st"> </span>sedlist_itc_txt <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">seddata =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(value), import_sedfit_f)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., ntf2_type, PH, ligand, lig_type, datatype_corr, datasetid, seddata) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datatype_wide =</span> <span class="kw">str_extract</span>(datatype_corr, <span class="st">&quot;data|error|fit&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;datatype_corr&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pivot_wider</span>(., <span class="dt">names_from =</span> <span class="kw">c</span>(<span class="st">&quot;datatype_wide&quot;</span>), <span class="dt">values_from =</span> <span class="kw">c</span>(<span class="st">&quot;seddata&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">seddata =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(data, error, fit), combine_data_error_fit_f) ) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;error&quot;</span>, <span class="st">&quot;fit&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datasetid =</span> <span class="kw">str_extract</span>(datasetid, <span class="st">&quot;1|2&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate_at</span>(., <span class="kw">c</span>(<span class="st">&quot;datasetid&quot;</span>), as.integer)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>sedlist_itcdata.tib &lt;-<span class="st"> </span>nitpiclist_itc.all <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., datatype_corr <span class="op">==</span><span class="st"> &quot;xls&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">oldxls =</span> <span class="kw">str_detect</span>(value, <span class="st">&quot;oldxls&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., oldxls <span class="op">==</span><span class="st"> &quot;FALSE&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., value, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;toptopfolger&quot;</span>, <span class="st">&quot;topfolder&quot;</span>, <span class="st">&quot;sedfolder&quot;</span>, <span class="st">&quot;dataname&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;/&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>)  <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., dataname, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;ntf2_type&quot;</span>, <span class="st">&quot;PH&quot;</span>, <span class="st">&quot;ligand&quot;</span>, <span class="st">&quot;lig_type0&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;datatype_corr&quot;</span>, <span class="st">&quot;oldxls&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., lig_type0, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;lig_type&quot;</span>, <span class="st">&quot;xls&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a>seq_along_c &lt;-<span class="st"> </span><span class="cf">function</span>(number){</span>
+<span id="cb7-4"><a href="#cb7-4"></a>out &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">seq_len</span>(number)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as_tibble</span>(.)  </span>
+<span id="cb7-5"><a href="#cb7-5"></a>}</span>
+<span id="cb7-6"><a href="#cb7-6"></a></span>
+<span id="cb7-7"><a href="#cb7-7"></a>sedphat_columns &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>folder, <span class="op">~</span>datasets, <span class="op">~</span>joinme, <span class="op">~</span>glycerol, </span>
+<span id="cb7-8"><a href="#cb7-8"></a>                           <span class="st">&quot;H31A_PH75_USP_WT&quot;</span>, <span class="dv">2</span>, <span class="st">&quot;sedphat&quot;</span>, <span class="st">&quot;GLYC&quot;</span>,</span>
+<span id="cb7-9"><a href="#cb7-9"></a>                           <span class="st">&quot;NTF2WT_PH75_USP_WT&quot;</span>, <span class="dv">3</span>, <span class="st">&quot;sedphat&quot;</span>, <span class="st">&quot;GLYC&quot;</span>,</span>
+<span id="cb7-10"><a href="#cb7-10"></a>                           <span class="st">&quot;NTF2WT_PH75_CAP_WT&quot;</span>, <span class="dv">4</span>, <span class="st">&quot;sedphat&quot;</span>, <span class="st">&quot;GLYC&quot;</span>,</span>
+<span id="cb7-11"><a href="#cb7-11"></a>                           <span class="st">&quot;NTF2WT_PH56_USP_WT&quot;</span>, <span class="dv">2</span>, <span class="st">&quot;sedphat&quot;</span>, <span class="st">&quot;GLYC&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12"></a>                           <span class="st">&quot;NTF2WT_PH56_CAP_WT&quot;</span>, <span class="dv">3</span>, <span class="st">&quot;sedphat&quot;</span>, <span class="st">&quot;GLYC&quot;</span>,</span>
+<span id="cb7-13"><a href="#cb7-13"></a>                           <span class="st">&quot;H31A_PH75_CAP_WT&quot;</span>, <span class="dv">2</span>, <span class="st">&quot;sedphat&quot;</span>, <span class="st">&quot;GLYC&quot;</span>,</span>
+<span id="cb7-14"><a href="#cb7-14"></a>                           <span class="st">&quot;NTF2WT_PH75_CAP_F3AL9A&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;sedphat&quot;</span>, <span class="st">&quot;GLYC&quot;</span>,</span>
+<span id="cb7-15"><a href="#cb7-15"></a>                           <span class="st">&quot;NTF2WT_PH75_CAP_L9A&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;sedphat&quot;</span>, <span class="st">&quot;GLYC&quot;</span>,</span>
+<span id="cb7-16"><a href="#cb7-16"></a>                           <span class="st">&quot;NTF2WT_PH75_USP_F3AF6A&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;sedphat&quot;</span>, <span class="st">&quot;GLYC&quot;</span>,</span>
+<span id="cb7-17"><a href="#cb7-17"></a>                           )</span>
+<span id="cb7-18"><a href="#cb7-18"></a></span>
+<span id="cb7-19"><a href="#cb7-19"></a>sedphat_coladd &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>joinme, <span class="op">~</span>range, <span class="op">~</span>colnames,</span>
+<span id="cb7-20"><a href="#cb7-20"></a>                          <span class="st">&quot;sedphat&quot;</span>, <span class="st">&quot;A2:F30&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;MXd&quot;</span>, <span class="st">&quot;NDHd&quot;</span>, <span class="st">&quot;NDHp&quot;</span>, <span class="st">&quot;NDHm&quot;</span>, <span class="st">&quot;MXf&quot;</span>, <span class="st">&quot;NDHf&quot;</span>))</span>
+<span id="cb7-21"><a href="#cb7-21"></a></span>
+<span id="cb7-22"><a href="#cb7-22"></a>sedphat_columns &lt;-<span class="st"> </span>sedphat_columns <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">datasets_seq =</span> purrr<span class="op">::</span><span class="kw">map</span>(datasets, <span class="op">~</span><span class="kw">seq_along_c</span>(.))) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., <span class="dt">cols =</span> <span class="st">&quot;datasets_seq&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., sedphat_coladd) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., folder, <span class="dt">datasetid =</span> value, range, colnames)</span>
+<span id="cb7-23"><a href="#cb7-23"></a></span>
+<span id="cb7-24"><a href="#cb7-24"></a>sedlist_itcdata_sedphat_fit.tib &lt;-<span class="st"> </span>sedlist_itcdata.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">folder =</span> <span class="kw">paste</span>(ntf2_type, PH, ligand, lig_type, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., sedphat_columns) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">seddata =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(value, datasetid, range, colnames), read_xls))</span>
+<span id="cb7-25"><a href="#cb7-25"></a></span>
+<span id="cb7-26"><a href="#cb7-26"></a>sedlist_itcdata_sedphat_fit_all &lt;-<span class="st"> </span>sedlist_itcdata_sedphat_fit.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., ntf2_type, PH, ligand, lig_type, datasetid, seddata) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">full_join</span>(., sedlist_itc_txt_fit.tib)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>sedlist_itcdata_sedphat_fit_preplot.tib &lt;-<span class="st"> </span>sedlist_itcdata_sedphat_fit_all <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., ntf2_type, PH, ligand, <span class="dt">lig_type_corr =</span> lig_type, datasetid, seddata)  <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., plotgroup_tribble) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., seddata)</span>
+<span id="cb8-2"><a href="#cb8-2"></a></span>
+<span id="cb8-3"><a href="#cb8-3"></a>sedlist_itcdata_sedphat_fit_plot &lt;-<span class="st"> </span>sedlist_itcdata_sedphat_fit_preplot.tib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="st">  </span><span class="co">#geom_line(aes(colour = factor(MLfitcorr))) +</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> MXd, <span class="dt">y =</span> NDHd, <span class="dt">group =</span> datasetidname, <span class="dt">colour =</span> plotgroup2, <span class="dt">shape =</span> <span class="kw">factor</span>(datasetid)), <span class="dt">size =</span> <span class="fl">0.7</span>) <span class="op">+</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="st">  </span><span class="kw">scale_shape_manual</span>(<span class="dt">values=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>)) <span class="op">+</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="st">  </span><span class="co">#geom_pointrange(aes(x = MXd, ymin=NDHm, ymax=NDHp)) +</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> MXd, <span class="dt">y =</span> NDHf, <span class="dt">group =</span> datasetidname, <span class="dt">colour =</span> plotgroup2), <span class="dt">size =</span> <span class="fl">0.5</span> ) <span class="op">+</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="st">  </span><span class="kw">scale_color_aaas</span>() <span class="op">+</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="st">&quot;molar ratio&quot;</span>, <span class="dt">minor_breaks =</span> <span class="ot">NULL</span>, <span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)) <span class="op">+</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">3</span>)) <span class="op">+</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="st">&quot;DQ: kcal/mol&quot;</span>, <span class="dt">labels =</span> <span class="cf">function</span>(breaks) ((breaks<span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">3</span>)) ) <span class="op">+</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,</span>
+<span id="cb8-15"><a href="#cb8-15"></a>        ) <span class="op">+</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="st">  </span><span class="kw">facet_grid</span>(plotgroup1 <span class="op">~</span><span class="st"> </span>ligand)</span>
+<span id="cb8-17"><a href="#cb8-17"></a> <span class="kw">print</span>(sedlist_itcdata_sedphat_fit_plot)</span></code></pre></div>
+<p><img src="index_files/figure-html/plotSEDPHATfit-1.png" width="672" /></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_sedfit_ggplot.jpeg&quot;</span>, sedlist_itcdata_sedphat_fit_plot, <span class="dt">device =</span> <span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">100</span>, <span class="dt">height =</span> <span class="dv">150</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_sedfit_ggplot.ps&quot;</span>, sedlist_itcdata_sedphat_fit_plot, <span class="dt">device =</span> <span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">100</span>, <span class="dt">height =</span> <span class="dv">150</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="msFigure2" class="figure-box">
+<p>ITC binding isotherms. Used for Figures 2 and 4 in ms. G0: NTF2-WT at pH 7.4, G1: H31A at pH 7.4, G2: H31YH62Y at pH 7.4, G3: NTF2-WT at pH 5.6.Not shown in manuscript.</p>
+</div>
+</div>
+<div id="d-error-surface" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.4</span> 2D error surface<a href="#d-error-surface" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Fit error contour map was obtained by F-statistics as implemented in Sedphat.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>sedlist_2Derror.tib &lt;-<span class="st"> </span>nitpiclist_itc.all <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., datatype_corr <span class="op">==</span><span class="st"> &quot;dHvsKab&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">colnames =</span> <span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;logK&quot;</span>, <span class="st">&quot;dH&quot;</span>, <span class="st">&quot;chisq&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., value, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;toptopfolger&quot;</span>, <span class="st">&quot;topfolder&quot;</span>, <span class="st">&quot;sedfolder&quot;</span>, <span class="st">&quot;dataname&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;/&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>)  <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., dataname, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;ntf2_type&quot;</span>, <span class="st">&quot;PH&quot;</span>, <span class="st">&quot;ligand&quot;</span>, <span class="st">&quot;lig_type0&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>, <span class="dt">remove =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., lig_type0, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;lig_type&quot;</span>, <span class="st">&quot;else&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;else&quot;</span>))</span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a>read_delim_error_f &lt;-<span class="st"> </span><span class="cf">function</span>(value, colnames){</span>
+<span id="cb10-4"><a href="#cb10-4"></a>  out &lt;-<span class="st"> </span><span class="kw">read_delim</span>(value, <span class="dt">delim=</span> <span class="st">&quot; &quot;</span>, <span class="dt">col_names =</span> colnames)</span>
+<span id="cb10-5"><a href="#cb10-5"></a>}</span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a>sedlist_2Derror_sedphat.tib &lt;-<span class="st"> </span>sedlist_2Derror.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">folder =</span> <span class="kw">paste</span>(ntf2_type, PH, ligand, lig_type, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">errordata =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(value, colnames), read_delim_error_f))</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>kde3d_purrr_f &lt;-<span class="st"> </span><span class="cf">function</span>(df){</span>
+<span id="cb11-2"><a href="#cb11-2"></a>kernel &lt;-<span class="st"> </span><span class="kw">kde3d</span>(df<span class="op">$</span>logK, df<span class="op">$</span>dHpos, df<span class="op">$</span>chinormlevel, <span class="dt">n =</span> <span class="dv">1000</span>, <span class="dt">lims =</span> <span class="kw">c</span>(<span class="kw">range</span>(df<span class="op">$</span>logK), <span class="kw">range</span>(df<span class="op">$</span>dHpos), <span class="kw">range</span>(df<span class="op">$</span>chinormlevel))) </span>
+<span id="cb11-3"><a href="#cb11-3"></a>out &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(kernel) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">colnames</span>(., )</span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="kw">return</span>(out)</span>
+<span id="cb11-5"><a href="#cb11-5"></a>}</span>
+<span id="cb11-6"><a href="#cb11-6"></a> </span>
+<span id="cb11-7"><a href="#cb11-7"></a></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="co">#note the critical chi-values from the fits</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a>sedlist_2Derror_sedphat_chicritical &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>folder, <span class="op">~</span>crichi, <span class="op">~</span>crifac,                                     </span>
+<span id="cb11-10"><a href="#cb11-10"></a>                                               <span class="st">&quot;NTF2WT_PH75_USP_WT&quot;</span>, <span class="fl">2.7</span>, <span class="fl">1.33</span>, <span class="co">#20210818 25/210 // 210 // 380</span></span>
+<span id="cb11-11"><a href="#cb11-11"></a>                                              <span class="st">&quot;H31A_PH75_USP_WT&quot;</span>, <span class="fl">0.15</span>, <span class="fl">1.33</span>, <span class="co">#1.05, #20210730</span></span>
+<span id="cb11-12"><a href="#cb11-12"></a>                                              <span class="st">&quot;NTF2WT_PH75_CAP_WT&quot;</span>, <span class="fl">4.1</span>, <span class="fl">1.33</span>, <span class="co">#1.03, #20210805 25/241.5 // 243 // 195 // 320</span></span>
+<span id="cb11-13"><a href="#cb11-13"></a>                                              <span class="st">&quot;NTF2WT_PH56_USP_WT&quot;</span>, <span class="fl">1.04</span>, <span class="fl">1.33</span>, <span class="co">#1.05, #20210730 </span></span>
+<span id="cb11-14"><a href="#cb11-14"></a>                                              <span class="st">&quot;NTF2WT_PH56_CAP_WT&quot;</span>, <span class="fl">4.2</span>, <span class="fl">1.33</span>, <span class="co">#1.03, #20210805 12.5/480 // 12.5/215 // 12.5//215</span></span>
+<span id="cb11-15"><a href="#cb11-15"></a>                                              <span class="st">&quot;H31A_PH75_CAP_WT&quot;</span>, <span class="fl">0.65</span>, <span class="fl">1.33</span>, <span class="co">#1.06, #20210730</span></span>
+<span id="cb11-16"><a href="#cb11-16"></a>                                              <span class="st">&quot;NTF2WT_PH75_CAP_L9A&quot;</span>, <span class="fl">2.02</span>, <span class="fl">1.33</span>, <span class="co">#1.179,</span></span>
+<span id="cb11-17"><a href="#cb11-17"></a>                                              <span class="st">&quot;NTF2YY_PH75_CAP_WT&quot;</span>, <span class="fl">2.2</span>, <span class="fl">1.33</span>, <span class="co">#1.05,</span></span>
+<span id="cb11-18"><a href="#cb11-18"></a>                                              <span class="st">&quot;NTF2YY_PH75_USP_WT&quot;</span>, <span class="fl">6.1</span>, <span class="fl">1.33</span>) <span class="co">#1.15)</span></span>
+<span id="cb11-19"><a href="#cb11-19"></a></span>
+<span id="cb11-20"><a href="#cb11-20"></a></span>
+<span id="cb11-21"><a href="#cb11-21"></a>sedlist_2Derror_sedphat_preplot &lt;-<span class="st"> </span>sedlist_2Derror_sedphat.tib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., plotgroup_tribble) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">errordata_corr =</span> purrr<span class="op">::</span><span class="kw">map</span>(errordata, <span class="op">~</span>dplyr<span class="op">::</span><span class="kw">filter</span>(., chisq <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>))) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., sedlist_2Derror_sedphat_chicritical) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">-</span>errordata) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., <span class="dt">cols =</span> <span class="kw">c</span>(<span class="st">&quot;errordata_corr&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., folder) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">chinorm =</span> (chisq<span class="op">/</span><span class="kw">min</span>(chisq) )) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">chinormlevel =</span> (<span class="dv">1</span><span class="op">-</span>(chisq<span class="op">-</span><span class="kw">min</span>(chisq))<span class="op">/</span>(<span class="kw">max</span>(chisq)<span class="op">-</span><span class="kw">min</span>(chisq))) ) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">logKd =</span> <span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">1</span><span class="op">*</span>logK)) </span>
+<span id="cb11-22"><a href="#cb11-22"></a></span>
+<span id="cb11-23"><a href="#cb11-23"></a></span>
+<span id="cb11-24"><a href="#cb11-24"></a>error_colors &lt;-<span class="st"> </span><span class="kw">rev</span>(<span class="kw">brewer.pal</span>(<span class="dt">n =</span> <span class="dv">5</span>, <span class="dt">name =</span> <span class="st">&quot;RdYlBu&quot;</span>)) </span>
+<span id="cb11-25"><a href="#cb11-25"></a></span>
+<span id="cb11-26"><a href="#cb11-26"></a>sedlist_2Derror_sedphat_preplot_vline &lt;-<span class="st"> </span>sedlist_2Derror_sedphat_preplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., plotgroup2 <span class="op">==</span><span class="st"> &quot;MUT0&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(., folder) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">Kdvalue =</span> logKd[<span class="kw">which</span>(chisq <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(chisq))], <span class="dt">dHvalue =</span> dH[<span class="kw">which</span>(chisq <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(chisq))])</span>
+<span id="cb11-27"><a href="#cb11-27"></a></span>
+<span id="cb11-28"><a href="#cb11-28"></a></span>
+<span id="cb11-29"><a href="#cb11-29"></a><span class="co">#print(sedlist_2Derror_sedphat_plot)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>sedlist_2Derror_sedphat_plot &lt;-<span class="st"> </span>sedlist_2Derror_sedphat_preplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., plotgroup2 <span class="op">==</span><span class="st"> &quot;MUT0&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., sedlist_2Derror_sedphat_preplot_vline) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(., <span class="kw">aes</span>(<span class="dt">x =</span> logKd, <span class="dt">y =</span> dH, <span class="dt">fill =</span> chinorm)) <span class="op">+</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="st">  </span><span class="kw">geom_raster</span>() <span class="op">+</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="st">  </span><span class="kw">geom_vline</span>(<span class="kw">aes</span>(<span class="dt">xintercept =</span> Kdvalue), <span class="dt">size =</span> <span class="fl">0.2</span>) <span class="op">+</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="st">  </span><span class="kw">geom_hline</span>(<span class="kw">aes</span>(<span class="dt">yintercept =</span> dHvalue), <span class="dt">size =</span> <span class="fl">0.2</span>) <span class="op">+</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="st">  </span><span class="co">#geom_mark_ellipse(data = . %&gt;% dplyr::filter(., chinorm &lt; crifac), expand = 0.0, tol = 0.5, n = 200, size = 0.2) +</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="st">  </span><span class="kw">scale_x_log10</span>(<span class="st">&quot;Kd: uM&quot;</span>, <span class="dt">breaks =</span>  <span class="kw">c</span>(<span class="fl">0.1</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>, <span class="dv">1</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>, <span class="dv">10</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>), <span class="dt">labels =</span> <span class="cf">function</span>(breaks) ((breaks<span class="op">*</span><span class="dv">10</span><span class="op">^</span><span class="dv">6</span>)) ) <span class="op">+</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="st">&quot;DH: kcal/mol&quot;</span>) <span class="op">+</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="fl">0.1</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>, <span class="dv">50</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>), <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">25</span>, <span class="dv">-10</span>)) <span class="op">+</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="st">  </span><span class="co">#scale_fill_gradientn(colours = c(&quot;cyan&quot;, &quot;black&quot;, &quot;red&quot;),)</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="st">  </span><span class="co">#scale_fill_gradientn(colors = error_colors, values = scales::rescale(c(1, 1.1, 1.2, 1.5, 2.5)), space = &quot;Lab&quot;) +</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="st">  </span><span class="kw">scale_fill_gradientn</span>(<span class="dt">colors =</span> error_colors, <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="fl">2.5</span>), <span class="dt">values =</span> scales<span class="op">::</span><span class="kw">rescale</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="fl">1.1</span>, <span class="fl">1.2</span>, <span class="fl">1.5</span>, <span class="fl">2.5</span>)), <span class="dt">space =</span> <span class="st">&quot;Lab&quot;</span>) <span class="op">+</span></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="st">  </span><span class="co">#scale_fill_gradientn(colors = c(&quot;blue&quot;, &quot;yellow&quot;, &quot;red&quot;), breaks= c(1, 1.2, 1.5)) +</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a><span class="st">  </span><span class="kw">facet_grid</span>(plotgroup1 <span class="op">~</span><span class="st"> </span>ligand)</span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="kw">print</span>(sedlist_2Derror_sedphat_plot)</span></code></pre></div>
+<p><img src="index_files/figure-html/plotXdHvsKab2-1.png" width="672" /></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_2Derror_ggplot.jpeg&quot;</span>, sedlist_2Derror_sedphat_plot, <span class="dt">device =</span> <span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">75</span>, <span class="dt">height =</span> <span class="dv">75</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_2Derror_ggplot.ps&quot;</span>, sedlist_2Derror_sedphat_plot, <span class="dt">device =</span> <span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">75</span>, <span class="dt">height =</span> <span class="dv">75</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="FigureError" class="figure-box">
+<p>Error surfaces as obtained from F-statistics as implemented in Sedphat. G0: NTF2-WT at pH 7.4, G1: H31A at pH 7.4, G2: H31YH62Y at pH 7.4, G3: NTF2-WT at pH 5.6.Not shown in manuscript.</p>
+</div>
+</div>
+<div id="comparison-of-dh-and-kd-values-obtained-for-the-itc-datasets" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.5</span> Comparison of dH and Kd values obtained for the ITC datasets<a href="#comparison-of-dh-and-kd-values-obtained-for-the-itc-datasets" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>sedlist_KDerror_sedphat_preplot &lt;-<span class="st"> </span>sedlist_2Derror_sedphat_preplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., plotgroup2 <span class="op">==</span><span class="st"> &quot;MUT0&quot;</span>, chinorm <span class="op">&lt;</span><span class="st"> </span>(crifac<span class="fl">+0.01</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., folder, ligand, plotgroup1, lig_type_corr) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">Kdmin =</span> <span class="kw">min</span>(logKd), <span class="dt">Kdmax =</span> <span class="kw">max</span>(logKd), <span class="dt">Kdvalue =</span> logKd[<span class="kw">which</span>(chinorm <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(chinorm))] ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">distinct</span>(., folder, <span class="dt">.keep_all =</span> <span class="ot">TRUE</span>) </span>
+<span id="cb14-2"><a href="#cb14-2"></a></span>
+<span id="cb14-3"><a href="#cb14-3"></a>sedlist_KDerror_sedphat_plot &lt;-<span class="st"> </span>sedlist_KDerror_sedphat_preplot <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(., <span class="kw">aes</span>(<span class="dt">x =</span> Kdvalue, <span class="dt">y =</span> <span class="kw">reorder</span>(plotgroup1, <span class="kw">desc</span>(plotgroup1)), <span class="dt">colour =</span> <span class="kw">factor</span>(lig_type_corr))) <span class="op">+</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="st">  </span><span class="kw">geom_crossbar</span>(<span class="kw">aes</span>(<span class="dt">xmin =</span> Kdmin, <span class="dt">xmax =</span> Kdmax), <span class="dt">size =</span> <span class="fl">0.5</span>, <span class="dt">fatten =</span> <span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="st">  </span><span class="co">#geom_mark_ellipse(data = . %&gt;% dplyr::filter(., chinorm &lt; crifac), expand = 0.0, tol = 0.5, n = 200, size = 0.2) +</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="st">  </span><span class="kw">scale_x_log10</span>(<span class="st">&quot;Kd: uM&quot;</span>, <span class="dt">breaks =</span>  <span class="kw">c</span>(<span class="fl">0.1</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>, <span class="dv">1</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>, <span class="dv">10</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>), <span class="dt">labels =</span> <span class="cf">function</span>(breaks) ((breaks<span class="op">*</span><span class="dv">10</span><span class="op">^</span><span class="dv">6</span>)) ) <span class="op">+</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="st">  </span><span class="co">#scale_y_continuous(&quot;DH: kcal/mol&quot;) +</span></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="st">  </span><span class="kw">scale_y_discrete</span>(<span class="dt">name =</span> <span class="ot">NULL</span>) <span class="op">+</span></span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="fl">0.1</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>, <span class="dv">25</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>)) <span class="op">+</span></span>
+<span id="cb14-12"><a href="#cb14-12"></a><span class="st">  </span><span class="co">#scale_fill_gradientn(colours = c(&quot;cyan&quot;, &quot;black&quot;, &quot;red&quot;),)</span></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="st">  </span><span class="co">#scale_fill_gradientn(colors = error_colors, values = scales::rescale(c(1, 1.1, 1.2, 1.5, 2.5)), space = &quot;Lab&quot;) +</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="st">  </span><span class="co">#scale_colour_gradientn(colors = error_colors, limits = c(1,2.5), values = scales::rescale(c(1, 1.1, 1.2, 1.5, 2.5)), space = &quot;Lab&quot;) +</span></span>
+<span id="cb14-15"><a href="#cb14-15"></a><span class="st"> </span><span class="co"># scale_color_grey(end = 0.5) +</span></span>
+<span id="cb14-16"><a href="#cb14-16"></a><span class="st">    </span><span class="kw">scale_color_aaas</span>() <span class="op">+</span></span>
+<span id="cb14-17"><a href="#cb14-17"></a><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="op">+</span></span>
+<span id="cb14-18"><a href="#cb14-18"></a><span class="co">#scale_fill_gradientn(colors = c(&quot;blue&quot;, &quot;yellow&quot;, &quot;red&quot;), breaks= c(1, 1.2, 1.5)) +</span></span>
+<span id="cb14-19"><a href="#cb14-19"></a><span class="st">  </span><span class="kw">facet_grid</span>(ligand <span class="op">~</span><span class="st"> </span>.)</span>
+<span id="cb14-20"><a href="#cb14-20"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_KDerror_ggplot.jpeg&quot;</span>, sedlist_KDerror_sedphat_plot, <span class="dt">device =</span> <span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">70</span>, <span class="dt">height =</span> <span class="dv">45</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb14-21"><a href="#cb14-21"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_KDerror_ggplot.ps&quot;</span>, sedlist_KDerror_sedphat_plot, <span class="dt">device =</span> <span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">70</span>, <span class="dt">height =</span> <span class="dv">45</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb14-22"><a href="#cb14-22"></a><span class="co">#print(sedlist_KDerror_sedphat_plot)</span></span>
+<span id="cb14-23"><a href="#cb14-23"></a></span>
+<span id="cb14-24"><a href="#cb14-24"></a></span>
+<span id="cb14-25"><a href="#cb14-25"></a>sedlist_dHerror_sedphat_plot &lt;-<span class="st"> </span>sedlist_2Derror_sedphat_preplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., plotgroup2 <span class="op">==</span><span class="st"> &quot;MUT0&quot;</span>, chinorm <span class="op">&lt;</span><span class="st"> </span>(crifac<span class="fl">+0.01</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., folder, ligand, plotgroup1, lig_type_corr) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">dHmin =</span> <span class="kw">min</span>(dH), <span class="dt">dHmax =</span> <span class="kw">max</span>(dH), <span class="dt">dHvalue =</span> dH[<span class="kw">which</span>(chinorm <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(chinorm))] ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(., <span class="kw">aes</span>(<span class="dt">x =</span> dHvalue, <span class="dt">y =</span> <span class="kw">reorder</span>(plotgroup1, <span class="kw">desc</span>(plotgroup1)), <span class="dt">colour =</span> <span class="kw">factor</span>(lig_type_corr))) <span class="op">+</span></span>
+<span id="cb14-26"><a href="#cb14-26"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb14-27"><a href="#cb14-27"></a><span class="st">  </span><span class="kw">geom_crossbar</span>(<span class="kw">aes</span>(<span class="dt">xmin =</span> dHmin, <span class="dt">xmax =</span> dHmax), <span class="dt">size =</span> <span class="fl">0.5</span>, <span class="dt">fatten =</span> <span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb14-28"><a href="#cb14-28"></a><span class="st">  </span><span class="co">#geom_mark_ellipse(data = . %&gt;% dplyr::filter(., chinorm &lt; crifac), expand = 0.0, tol = 0.5, n = 200, size = 0.2) +</span></span>
+<span id="cb14-29"><a href="#cb14-29"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb14-30"><a href="#cb14-30"></a><span class="st">  </span><span class="co">#scale_x_log10(&quot;Kd: uM&quot;, breaks =  c(0.1*10^-6, 1*10^-6, 10*10^-6), labels = function(breaks) ((breaks*10^6)) ) +</span></span>
+<span id="cb14-31"><a href="#cb14-31"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="st">&quot;DH: kcal/mol&quot;</span>, <span class="dt">n.breaks =</span> <span class="dv">3</span>) <span class="op">+</span></span>
+<span id="cb14-32"><a href="#cb14-32"></a><span class="st">  </span><span class="kw">scale_y_discrete</span>(<span class="dt">name =</span> <span class="ot">NULL</span>) <span class="op">+</span></span>
+<span id="cb14-33"><a href="#cb14-33"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">25</span>, <span class="dv">0</span>)) <span class="op">+</span></span>
+<span id="cb14-34"><a href="#cb14-34"></a><span class="st">  </span><span class="co">#scale_fill_gradientn(colours = c(&quot;cyan&quot;, &quot;black&quot;, &quot;red&quot;),)</span></span>
+<span id="cb14-35"><a href="#cb14-35"></a><span class="st">  </span><span class="co">#scale_fill_gradientn(colors = error_colors, values = scales::rescale(c(1, 1.1, 1.2, 1.5, 2.5)), space = &quot;Lab&quot;) +</span></span>
+<span id="cb14-36"><a href="#cb14-36"></a><span class="st">  </span><span class="co">#scale_colour_gradientn(colors = error_colors, limits = c(1,2.5), values = scales::rescale(c(1, 1.1, 1.2, 1.5, 2.5)), space = &quot;Lab&quot;) +</span></span>
+<span id="cb14-37"><a href="#cb14-37"></a><span class="st">  </span><span class="kw">scale_color_aaas</span>() <span class="op">+</span></span>
+<span id="cb14-38"><a href="#cb14-38"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="op">+</span></span>
+<span id="cb14-39"><a href="#cb14-39"></a><span class="st">  </span><span class="co">#scale_color_grey(end = 0.5) +</span></span>
+<span id="cb14-40"><a href="#cb14-40"></a><span class="st">  </span><span class="co">#scale_fill_gradientn(colors = c(&quot;blue&quot;, &quot;yellow&quot;, &quot;red&quot;), breaks= c(1, 1.2, 1.5)) +</span></span>
+<span id="cb14-41"><a href="#cb14-41"></a><span class="st">  </span><span class="kw">facet_grid</span>(ligand <span class="op">~</span><span class="st"> </span>.)</span>
+<span id="cb14-42"><a href="#cb14-42"></a> <span class="kw">print</span>(sedlist_dHerror_sedphat_plot)</span></code></pre></div>
+<p><img src="index_files/figure-html/KdXplot-1.png" width="672" /></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_dHerror_ggplot.jpeg&quot;</span>, sedlist_dHerror_sedphat_plot, <span class="dt">device =</span> <span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">70</span>, <span class="dt">height =</span> <span class="dv">45</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_dHerror_ggplot.ps&quot;</span>, sedlist_dHerror_sedphat_plot, <span class="dt">device =</span> <span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">70</span>, <span class="dt">height =</span> <span class="dv">45</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="FigureXdHerror" class="figure-box">
+<p>Comparison of dH values with error. Low pH descreases and increases the enthalpy for Caprin-1 and USP10 binding. We have not discussed this in the manuscript, but this may support further support that G0: NTF2-WT at pH 7.4, G1: H31A at pH 7.4, G2: H31YH62Y at pH 7.4, G3: NTF2-WT at pH 5.6.Not shown in manuscript.</p>
+</div>
+</div>
+</div>
+<div id="comparison-to-bli-and-nanodsf" class="section level1 hasAnchor">
+<h1><span class="header-section-number">4</span> Comparison to BLI and nanoDSF<a href="#comparison-to-bli-and-nanodsf" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="comparison-of-affinities-obtained-from-itc-bli-and-nanodsf." class="section level2 hasAnchor">
+<h2><span class="header-section-number">4.1</span> Comparison of affinities obtained from ITC, BLI and nanoDSF.<a href="#comparison-of-affinities-obtained-from-itc-bli-and-nanodsf." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Comparison of affinites which was not shown in the manuscript.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>octet_import =<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">path =</span> <span class="st">&quot;./data_octet&quot;</span>, <span class="dt">pattern =</span> <span class="st">&quot;*&quot;</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">include.dirs =</span> <span class="ot">TRUE</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb16-2"><a href="#cb16-2"></a>octet_import.tib &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(octet_import)</span>
+<span id="cb16-3"><a href="#cb16-3"></a>octet_import.all &lt;-<span class="st"> </span>octet_import.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data =</span> purrr<span class="op">::</span><span class="kw">map</span>(value, <span class="op">~</span><span class="kw">vroom</span>(.))) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., data) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;value&quot;</span>))</span>
+<span id="cb16-4"><a href="#cb16-4"></a></span>
+<span id="cb16-5"><a href="#cb16-5"></a>octet_ec50_values &lt;-<span class="st"> </span>octet_import.all <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., hill_term <span class="op">==</span><span class="st"> &quot;EC50&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">value =</span> <span class="kw">str_replace</span>(hill_stats_value, <span class="st">&quot;,&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">.&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate_at</span>(., <span class="kw">c</span>(<span class="st">&quot;value&quot;</span>), <span class="op">~</span><span class="kw">as.numeric</span>(.)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">value =</span> value<span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">9</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., hill_stats <span class="op">==</span><span class="st"> &quot;estimate&quot;</span> <span class="op">|</span>hill_stats <span class="op">==</span><span class="st"> &quot;std.error&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;hill_stats_value&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pivot_wider</span>(., <span class="dt">names_from =</span> <span class="kw">c</span>(<span class="st">&quot;hill_stats&quot;</span>), <span class="dt">values_from =</span> <span class="kw">c</span>(<span class="st">&quot;value&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">value =</span> estimate, <span class="dt">value_max =</span> estimate <span class="op">+</span><span class="st"> </span>std.error, <span class="dt">value_min =</span> estimate <span class="op">-</span><span class="st"> </span>std.error) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="dt">ligand =</span> rec, <span class="kw">contains</span>(<span class="st">&quot;value&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">type =</span> <span class="st">&quot;octet&quot;</span>, <span class="dt">color =</span> <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb16-6"><a href="#cb16-6"></a></span>
+<span id="cb16-7"><a href="#cb16-7"></a></span>
+<span id="cb16-8"><a href="#cb16-8"></a>itc_kd_values &lt;-<span class="st"> </span>sedlist_2Derror_sedphat_preplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., plotgroup2 <span class="op">==</span><span class="st"> &quot;MUT0&quot;</span>, chinorm <span class="op">&lt;</span><span class="st"> </span>(crifac<span class="fl">+0.01</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., folder, ligand, plotgroup1, lig_type_corr) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">Kdmin =</span> <span class="kw">min</span>(logKd), <span class="dt">Kdmax =</span> <span class="kw">max</span>(logKd), <span class="dt">Kdvalue =</span> logKd[<span class="kw">which</span>(chinorm <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(chinorm))] ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">distinct</span>(., folder, <span class="dt">.keep_all =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., plotgroup1 <span class="op">==</span><span class="st"> &quot;G0&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., ligand, <span class="dt">value=</span>Kdvalue, <span class="dt">value_max=</span>Kdmax, <span class="dt">value_min =</span> Kdmin) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">type =</span> <span class="st">&quot;itc&quot;</span>, <span class="dt">color =</span> <span class="st">&quot;blue&quot;</span>)</span>
+<span id="cb16-9"><a href="#cb16-9"></a></span>
+<span id="cb16-10"><a href="#cb16-10"></a>itc_octet_colors &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>name, <span class="op">~</span>value,</span>
+<span id="cb16-11"><a href="#cb16-11"></a>                            <span class="st">&quot;itc&quot;</span>, <span class="st">&quot;#252e5c&quot;</span>,</span>
+<span id="cb16-12"><a href="#cb16-12"></a>                            <span class="st">&quot;octet&quot;</span>, <span class="st">&quot;#5c6cbd&quot;</span>)</span>
+<span id="cb16-13"><a href="#cb16-13"></a></span>
+<span id="cb16-14"><a href="#cb16-14"></a>itc_octet_colors &lt;-<span class="st"> </span>itc_octet_colors  <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">deframe</span>()</span>
+<span id="cb16-15"><a href="#cb16-15"></a></span>
+<span id="cb16-16"><a href="#cb16-16"></a><span class="co">#itc_octet_colors &lt;- as_tibble(pal_aaas()(1)) %&gt;% add_row(., value = &quot;#5c6cbd&quot;) %&gt;% add_column(., name = c(&quot;itc&quot;, &quot;octet&quot;)) %&gt;% dplyr::select(., name, color = value) %&gt;% dplyr::select(., value = name, vame = color) %&gt;% deframe()</span></span>
+<span id="cb16-17"><a href="#cb16-17"></a></span>
+<span id="cb16-18"><a href="#cb16-18"></a>itc_octet_comp_plot &lt;-<span class="st"> </span>itc_kd_values <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">full_join</span>(., octet_ec50_values) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(., <span class="kw">aes</span>(<span class="dt">x =</span> value, <span class="dt">y =</span> <span class="kw">reorder</span>(ligand, <span class="kw">desc</span>(ligand)), <span class="dt">colour =</span> <span class="kw">factor</span>(type))) <span class="op">+</span></span>
+<span id="cb16-19"><a href="#cb16-19"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="dv">3</span>) <span class="op">+</span></span>
+<span id="cb16-20"><a href="#cb16-20"></a><span class="st">  </span><span class="kw">geom_crossbar</span>(<span class="kw">aes</span>(<span class="dt">xmin =</span> value_min, <span class="dt">xmax =</span> value_max), <span class="dt">size =</span> <span class="fl">0.3</span>, <span class="dt">fatten =</span> <span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb16-21"><a href="#cb16-21"></a><span class="st">  </span><span class="co">#geom_mark_ellipse(data = . %&gt;% dplyr::filter(., chinorm &lt; crifac), expand = 0.0, tol = 0.5, n = 200, size = 0.2) +</span></span>
+<span id="cb16-22"><a href="#cb16-22"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb16-23"><a href="#cb16-23"></a><span class="st">  </span><span class="kw">scale_x_log10</span>(<span class="st">&quot;Kd: uM&quot;</span>, <span class="dt">breaks =</span>  <span class="kw">c</span>(<span class="dv">1</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">8</span>, <span class="dv">1</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">7</span>, <span class="dv">1</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>, <span class="dv">10</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>), <span class="dt">labels =</span> <span class="cf">function</span>(breaks) ((breaks<span class="op">*</span><span class="dv">10</span><span class="op">^</span><span class="dv">6</span>)) ) <span class="op">+</span></span>
+<span id="cb16-24"><a href="#cb16-24"></a><span class="st">  </span><span class="co">#scale_y_continuous(&quot;DH: kcal/mol&quot;) +</span></span>
+<span id="cb16-25"><a href="#cb16-25"></a><span class="st">  </span><span class="kw">scale_y_discrete</span>(<span class="dt">name =</span> <span class="ot">NULL</span>) <span class="op">+</span></span>
+<span id="cb16-26"><a href="#cb16-26"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">1</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">8</span>, <span class="dv">25</span><span class="op">*</span><span class="dv">10</span><span class="op">^-</span><span class="dv">6</span>)) <span class="op">+</span></span>
+<span id="cb16-27"><a href="#cb16-27"></a><span class="st">  </span><span class="co">#scale_fill_gradientn(colours = c(&quot;cyan&quot;, &quot;black&quot;, &quot;red&quot;),)</span></span>
+<span id="cb16-28"><a href="#cb16-28"></a><span class="st">  </span><span class="co">#scale_fill_gradientn(colors = error_colors, values = scales::rescale(c(1, 1.1, 1.2, 1.5, 2.5)), space = &quot;Lab&quot;) +</span></span>
+<span id="cb16-29"><a href="#cb16-29"></a><span class="st">  </span><span class="co">#scale_colour_gradientn(colors = error_colors, limits = c(1,2.5), values = scales::rescale(c(1, 1.1, 1.2, 1.5, 2.5)), space = &quot;Lab&quot;) +</span></span>
+<span id="cb16-30"><a href="#cb16-30"></a><span class="st"> </span><span class="co"># scale_color_grey(end = 0.5) +</span></span>
+<span id="cb16-31"><a href="#cb16-31"></a><span class="st">    </span><span class="kw">scale_color_manual</span>(., <span class="dt">values =</span> itc_octet_colors) <span class="op">+</span></span>
+<span id="cb16-32"><a href="#cb16-32"></a><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="op">+</span></span>
+<span id="cb16-33"><a href="#cb16-33"></a><span class="co">#scale_fill_gradientn(colors = c(&quot;blue&quot;, &quot;yellow&quot;, &quot;red&quot;), breaks= c(1, 1.2, 1.5)) +</span></span>
+<span id="cb16-34"><a href="#cb16-34"></a><span class="st">  </span><span class="kw">facet_grid</span>(. <span class="op">~</span><span class="st"> </span>.)</span>
+<span id="cb16-35"><a href="#cb16-35"></a><span class="kw">print</span>(itc_octet_comp_plot)</span></code></pre></div>
+<p><img src="index_files/figure-html/importOctetTab-1.png" width="672" /></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_octet_ggplot.jpeg&quot;</span>, itc_octet_comp_plot, <span class="dt">device =</span> <span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">60</span>, <span class="dt">height =</span> <span class="dv">20</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./itc_octet_ggplot.ps&quot;</span>, itc_octet_comp_plot, <span class="dt">device =</span> <span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">60</span>, <span class="dt">height =</span> <span class="dv">20</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="ComparisonAffinities" class="figure-box">
+<p>Comparison of affinities from ITC and BLI. Not shown in ms.</p>
+</div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>NTF2group_tib &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>NTF2, <span class="op">~</span>NTF2group,</span>
+<span id="cb18-2"><a href="#cb18-2"></a>                         <span class="st">&quot;NTF2WT&quot;</span>, <span class="st">&quot;aWT&quot;</span>,</span>
+<span id="cb18-3"><a href="#cb18-3"></a>                         <span class="st">&quot;H31A&quot;</span>, <span class="st">&quot;bH31A&quot;</span>,</span>
+<span id="cb18-4"><a href="#cb18-4"></a>                         <span class="st">&quot;NTF2YY&quot;</span>, <span class="st">&quot;cH31YH62Y&quot;</span>)</span>
+<span id="cb18-5"><a href="#cb18-5"></a></span>
+<span id="cb18-6"><a href="#cb18-6"></a>ligandgroup_tib &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>Ligand, <span class="op">~</span>ligandgroup,</span>
+<span id="cb18-7"><a href="#cb18-7"></a>                           <span class="st">&quot;NONE&quot;</span>, <span class="st">&quot;aNONE&quot;</span>,</span>
+<span id="cb18-8"><a href="#cb18-8"></a>                           <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;bUSP&quot;</span>,</span>
+<span id="cb18-9"><a href="#cb18-9"></a>                           <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;cCAP&quot;</span>)</span>
+<span id="cb18-10"><a href="#cb18-10"></a>PHvalues_tib &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>PHstring, <span class="op">~</span>PHvalues,</span>
+<span id="cb18-11"><a href="#cb18-11"></a>                        <span class="st">&quot;PH75&quot;</span>, <span class="fl">7.5</span>,</span>
+<span id="cb18-12"><a href="#cb18-12"></a>                        <span class="st">&quot;PH56&quot;</span>, <span class="fl">5.6</span>)</span>
+<span id="cb18-13"><a href="#cb18-13"></a></span>
+<span id="cb18-14"><a href="#cb18-14"></a>itc_affinity_values &lt;-<span class="st"> </span>sedlist_KDerror_sedphat_preplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;ligand&quot;</span>, <span class="st">&quot;lig_type_corr&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., folder, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;NTF2&quot;</span>, <span class="st">&quot;PHstring&quot;</span>, <span class="st">&quot;Ligand&quot;</span>, <span class="st">&quot;RM&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., NTF2group_tib) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., ligandgroup_tib) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., PHvalues_tib) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">value =</span> <span class="kw">log10</span>(Kdvalue), <span class="dt">value_min =</span> <span class="kw">log10</span>(Kdmin), <span class="dt">value_max =</span> <span class="kw">log10</span>(Kdmax)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;Kdvalue&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., NTF2group, ligandgroup, PHvalues, <span class="kw">contains</span>(<span class="st">&quot;value&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">method =</span> <span class="st">&quot;aITC&quot;</span>, <span class="dt">value_type =</span> <span class="st">&quot;affinity&quot;</span>)</span>
+<span id="cb18-15"><a href="#cb18-15"></a></span>
+<span id="cb18-16"><a href="#cb18-16"></a>nDSF_data &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;./nanoDSF_export.rds&quot;</span>)</span>
+<span id="cb18-17"><a href="#cb18-17"></a>  </span>
+<span id="cb18-18"><a href="#cb18-18"></a>binding_data_comp &lt;-<span class="st"> </span>itc_affinity_values <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">full_join</span>(., nDSF_data)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>LIGcolor_scale &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>name, <span class="op">~</span>value, <span class="kw">c</span>( <span class="st">&quot;aNONE&quot;</span>, <span class="st">&quot;bUSP&quot;</span>, <span class="st">&quot;cCAP&quot;</span>, <span class="st">&quot;scale&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;#D1D1D1&quot;</span> ,<span class="st">&quot;#B9C9AD&quot;</span>,<span class="st">&quot;#3FC6D8&quot;</span>, <span class="st">&quot;#FFFFFF00&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., name, value) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">deframe</span>()</span>
+<span id="cb19-2"><a href="#cb19-2"></a></span>
+<span id="cb19-3"><a href="#cb19-3"></a>NTF2group_tib &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(<span class="kw">c</span>(<span class="st">&quot;aWT&quot;</span>, <span class="st">&quot;bH31A&quot;</span>, <span class="st">&quot;cH31YH62Y&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="dt">NTF2group =</span> value)</span>
+<span id="cb19-4"><a href="#cb19-4"></a></span>
+<span id="cb19-5"><a href="#cb19-5"></a>add_facets &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>PHvalues, <span class="op">~</span>value, <span class="op">~</span>value_type, <span class="op">~</span>ligandgroup,</span>
+<span id="cb19-6"><a href="#cb19-6"></a>                      <span class="fl">8.5</span>, <span class="dv">-7</span>, <span class="st">&quot;affinity&quot;</span>, <span class="st">&quot;scale&quot;</span>,</span>
+<span id="cb19-7"><a href="#cb19-7"></a>                      <span class="dv">5</span>, <span class="dv">-4</span>, <span class="st">&quot;affinity&quot;</span>, <span class="st">&quot;scale&quot;</span>,</span>
+<span id="cb19-8"><a href="#cb19-8"></a>                      <span class="fl">8.5</span>, <span class="dv">20</span>, <span class="st">&quot;dTm&quot;</span>, <span class="st">&quot;scale&quot;</span>,</span>
+<span id="cb19-9"><a href="#cb19-9"></a>                      <span class="dv">5</span>, <span class="dv">-5</span>, <span class="st">&quot;dTm&quot;</span>, <span class="st">&quot;scale&quot;</span>)</span>
+<span id="cb19-10"><a href="#cb19-10"></a></span>
+<span id="cb19-11"><a href="#cb19-11"></a>add_facets &lt;-<span class="st"> </span>add_facets <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., ligandgroup) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nest</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">NTF2group =</span> <span class="kw">list</span>(NTF2group_tib)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., NTF2group) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(data)</span>
+<span id="cb19-12"><a href="#cb19-12"></a></span>
+<span id="cb19-13"><a href="#cb19-13"></a>binding_data_comp_filtered &lt;-<span class="st"> </span>binding_data_comp <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., PHvalues <span class="op">&lt;</span><span class="st"> </span><span class="dv">8</span>, ligandgroup <span class="op">!=</span><span class="st"> &quot;aNONE&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">full_join</span>(., add_facets) </span>
+<span id="cb19-14"><a href="#cb19-14"></a></span>
+<span id="cb19-15"><a href="#cb19-15"></a>invert_y &lt;-<span class="st"> </span><span class="cf">function</span>(x){</span>
+<span id="cb19-16"><a href="#cb19-16"></a>  x_out &lt;-<span class="st"> </span>x<span class="op">*</span>(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb19-17"><a href="#cb19-17"></a>  <span class="kw">return</span>(x_out)</span>
+<span id="cb19-18"><a href="#cb19-18"></a>}</span>
+<span id="cb19-19"><a href="#cb19-19"></a></span>
+<span id="cb19-20"><a href="#cb19-20"></a>binding_data_comp_affinity &lt;-<span class="st"> </span>binding_data_comp_filtered <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., value_type <span class="op">==</span><span class="st"> &quot;affinity&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="kw">across</span>(<span class="kw">c</span>(<span class="st">&quot;value&quot;</span>, <span class="st">&quot;value_min&quot;</span>, <span class="st">&quot;value_max&quot;</span>), invert_y)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., ligandgroup <span class="op">!=</span><span class="st"> &quot;scale&quot;</span>)</span>
+<span id="cb19-21"><a href="#cb19-21"></a></span>
+<span id="cb19-22"><a href="#cb19-22"></a><span class="co">#%&gt;% dplyr::mutate(., value_mod = -value) %&gt;% </span></span>
+<span id="cb19-23"><a href="#cb19-23"></a></span>
+<span id="cb19-24"><a href="#cb19-24"></a>binding_data_compplot &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb19-25"><a href="#cb19-25"></a><span class="st">  </span><span class="kw">geom_col</span>(<span class="dt">data =</span> binding_data_comp_affinity, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">y =</span> value, <span class="dt">fill =</span> ligandgroup), <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span></span>
+<span id="cb19-26"><a href="#cb19-26"></a><span class="st">  </span><span class="kw">geom_errorbar</span>(<span class="dt">data =</span> binding_data_comp_affinity, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">ymin =</span> value_min, <span class="dt">ymax =</span> value_max, <span class="dt">group =</span> ligandgroup), <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">size =</span> <span class="fl">0.5</span>) <span class="op">+</span></span>
+<span id="cb19-27"><a href="#cb19-27"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data =</span> binding_data_comp_affinity <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(NTF2group, PHvalues, value_type) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">method =</span> <span class="kw">unique</span>(method)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">value =</span> <span class="fl">4.5</span>),<span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">y =</span> value, <span class="dt">colour =</span> method), <span class="dt">size =</span> <span class="dv">2</span>) <span class="op">+</span></span>
+<span id="cb19-28"><a href="#cb19-28"></a><span class="st">  </span><span class="co">#scale_color_grey() +</span></span>
+<span id="cb19-29"><a href="#cb19-29"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>)) <span class="op">+</span></span>
+<span id="cb19-30"><a href="#cb19-30"></a><span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> LIGcolor_scale) <span class="op">+</span></span>
+<span id="cb19-31"><a href="#cb19-31"></a><span class="st">  </span><span class="co">#scale_x_log10() +</span></span>
+<span id="cb19-32"><a href="#cb19-32"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="dv">6</span>)) <span class="op">+</span></span>
+<span id="cb19-33"><a href="#cb19-33"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>() <span class="op">+</span></span>
+<span id="cb19-34"><a href="#cb19-34"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="fl">4.5</span>,<span class="dv">9</span>), <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="fl">4.5</span>, <span class="fl">6.5</span>)) <span class="op">+</span></span>
+<span id="cb19-35"><a href="#cb19-35"></a><span class="st">  </span><span class="co">#coord_cartesian() +</span></span>
+<span id="cb19-36"><a href="#cb19-36"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb19-37"><a href="#cb19-37"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid.major.y =</span> <span class="kw">element_line</span>(<span class="dt">colour =</span> <span class="st">&quot;grey50&quot;</span>)) <span class="op">+</span><span class="st"> </span><span class="co">#legend.position = &quot;null&quot;</span></span>
+<span id="cb19-38"><a href="#cb19-38"></a><span class="st">  </span><span class="co">#coord_flip(xlim = c(4,8), ylim = c(20,80)) +</span></span>
+<span id="cb19-39"><a href="#cb19-39"></a><span class="st">  </span><span class="kw">facet_grid</span>(value_type <span class="op">~</span><span class="st"> </span>NTF2group, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>)</span>
+<span id="cb19-40"><a href="#cb19-40"></a><span class="kw">print</span>(binding_data_compplot)</span></code></pre></div>
+<p><img src="index_files/figure-html/bindingdataCombPlot-1.png" width="672" /></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./binding_data_compplot.jpeg&quot;</span>, binding_data_compplot,  <span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">45</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./binding_data_compplot.ps&quot;</span>, binding_data_compplot,  <span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">45</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="msFigure4G" class="figure-box">
+<p>Comparison of affinities from ITC and nanoDSF. Figure 4G in ms.</p>
+</div>
+</div>
+<div id="result-table" class="section level2 hasAnchor">
+<h2><span class="header-section-number">4.2</span> Result table<a href="#result-table" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>sedlist_2Derror_sedphat_fitresults_tab &lt;-<span class="st"> </span>sedlist_2Derror_sedphat_preplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., chinorm <span class="op">&lt;</span><span class="st"> </span>crifac) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">dH_mean =</span> <span class="kw">mean</span>(dH), <span class="dt">dH_up =</span> <span class="kw">max</span>(dH), <span class="dt">dH_lo =</span> <span class="kw">min</span>(dH), <span class="dt">Kd_mean =</span> <span class="kw">mean</span>(logKd)<span class="op">*</span><span class="dv">10</span><span class="op">^</span><span class="dv">6</span>, <span class="dt">Kd_up =</span> <span class="kw">max</span>(logKd)<span class="op">*</span><span class="dv">10</span><span class="op">^</span><span class="dv">6</span>, <span class="dt">Kd_lo =</span> <span class="kw">min</span>(logKd)<span class="op">*</span><span class="dv">10</span><span class="op">^</span><span class="dv">6</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate_at</span>(., <span class="kw">vars</span>(<span class="kw">starts_with</span>(<span class="st">&quot;dH&quot;</span>)), <span class="kw">funs</span>(<span class="kw">round</span>(., <span class="dv">0</span>))) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate_at</span>(., <span class="kw">vars</span>(<span class="kw">starts_with</span>(<span class="st">&quot;Kd&quot;</span>)), <span class="kw">funs</span>(<span class="kw">round</span>(., <span class="dv">3</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">kable</span>(sedlist_2Derror_sedphat_fitresults_tab, <span class="dt">caption =</span> <span class="st">&quot;**ITC global fit parameters with upper and lower fit limits **&quot;</span>) </span></code></pre></div>
+<table>
+<caption>
+<span id="tab:unnamed-chunk-1">Table 4.1: </span><strong>ITC global fit parameters with upper and lower fit limits </strong>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+folder
+</th>
+<th style="text-align:right;">
+dH_mean
+</th>
+<th style="text-align:right;">
+dH_up
+</th>
+<th style="text-align:right;">
+dH_lo
+</th>
+<th style="text-align:right;">
+Kd_mean
+</th>
+<th style="text-align:right;">
+Kd_up
+</th>
+<th style="text-align:right;">
+Kd_lo
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+H31A_PH75_CAP_WT
+</td>
+<td style="text-align:right;">
+-13
+</td>
+<td style="text-align:right;">
+-9
+</td>
+<td style="text-align:right;">
+-18
+</td>
+<td style="text-align:right;">
+17.633
+</td>
+<td style="text-align:right;">
+35.343
+</td>
+<td style="text-align:right;">
+5.601
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+H31A_PH75_USP_WT
+</td>
+<td style="text-align:right;">
+-16
+</td>
+<td style="text-align:right;">
+-16
+</td>
+<td style="text-align:right;">
+-18
+</td>
+<td style="text-align:right;">
+2.716
+</td>
+<td style="text-align:right;">
+3.286
+</td>
+<td style="text-align:right;">
+2.073
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NTF2WT_PH56_CAP_WT
+</td>
+<td style="text-align:right;">
+-14
+</td>
+<td style="text-align:right;">
+-12
+</td>
+<td style="text-align:right;">
+-15
+</td>
+<td style="text-align:right;">
+1.498
+</td>
+<td style="text-align:right;">
+2.256
+</td>
+<td style="text-align:right;">
+0.898
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NTF2WT_PH56_USP_WT
+</td>
+<td style="text-align:right;">
+-17
+</td>
+<td style="text-align:right;">
+-16
+</td>
+<td style="text-align:right;">
+-18
+</td>
+<td style="text-align:right;">
+0.367
+</td>
+<td style="text-align:right;">
+0.557
+</td>
+<td style="text-align:right;">
+0.222
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NTF2WT_PH75_CAP_L9A
+</td>
+<td style="text-align:right;">
+-15
+</td>
+<td style="text-align:right;">
+-15
+</td>
+<td style="text-align:right;">
+-15
+</td>
+<td style="text-align:right;">
+20.741
+</td>
+<td style="text-align:right;">
+20.741
+</td>
+<td style="text-align:right;">
+20.741
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NTF2WT_PH75_CAP_WT
+</td>
+<td style="text-align:right;">
+-16
+</td>
+<td style="text-align:right;">
+-16
+</td>
+<td style="text-align:right;">
+-17
+</td>
+<td style="text-align:right;">
+2.191
+</td>
+<td style="text-align:right;">
+2.710
+</td>
+<td style="text-align:right;">
+1.710
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NTF2WT_PH75_USP_WT
+</td>
+<td style="text-align:right;">
+-16
+</td>
+<td style="text-align:right;">
+-15
+</td>
+<td style="text-align:right;">
+-16
+</td>
+<td style="text-align:right;">
+1.048
+</td>
+<td style="text-align:right;">
+1.299
+</td>
+<td style="text-align:right;">
+0.819
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NTF2YY_PH75_CAP_WT
+</td>
+<td style="text-align:right;">
+-19
+</td>
+<td style="text-align:right;">
+-18
+</td>
+<td style="text-align:right;">
+-21
+</td>
+<td style="text-align:right;">
+2.118
+</td>
+<td style="text-align:right;">
+2.640
+</td>
+<td style="text-align:right;">
+1.666
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NTF2YY_PH75_USP_WT
+</td>
+<td style="text-align:right;">
+-14
+</td>
+<td style="text-align:right;">
+-13
+</td>
+<td style="text-align:right;">
+-15
+</td>
+<td style="text-align:right;">
+0.552
+</td>
+<td style="text-align:right;">
+0.868
+</td>
+<td style="text-align:right;">
+0.275
+</td>
+</tr>
+</tbody>
+</table>
+<div id="tab1_itcparameters" class="table-box">
+<p>Upper and lower fit limits estimated from F-statistics as implemented in Sedphat.
+dH in kcal/mole, Kd in uM.</p>
+</div>
+<p>Plots were saved as postscript files, and edited into publication-quality figures using Adobe Illustrator.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": false
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
