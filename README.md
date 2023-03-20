@@ -5,7 +5,8 @@ Data were obtained using an ITC200 calorimeter (GE Healthcare). Data and binding
 Final analysis and global fits were performed using NITPIC and Sedphat (Brautigam et al., 2016; Scheuermann and Brautigam, 2015).
 
 folder comprising the ITC data: data_itc
-data can also be re-opened in Sedphat.
+
+Data can also be re-opened in Sedphat.
 
 Clone the repository and run index.rmd in Rstudio to re-run the script.
 
