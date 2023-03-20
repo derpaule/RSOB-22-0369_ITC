@@ -14,7 +14,6 @@ link-citations: yes
 
 # Info about ITC analysis script
 ITC data associated with [Caprin-1 binding to the critical stress granule protein G3BP1 is influenced by pH](to be linked). Data were first analyzed using the Malvern [software](https://www.malvernpanalytical.com/en/learn/knowledge-center/user-manuals/MAN0576EN). Final global fits were obtained using [NITPIC](https://www.utsouthwestern.edu/labs/mbr/software/) and  [SEDPHAT](http://www.analyticalultracentrifugation.com/sedphat/).  
-This script was only used to generate the figures for the manuscript.
 
 # Load libraries
 ```{r ini,message=FALSE, include=TRUE, echo = FALSE, warning=FALSE}
@@ -56,9 +55,10 @@ library(svglite)
 The nitpic-processed data were saved and opened in Sedphat for global fitting. The fitted data were saved using the option "copy all data and save as new config" as well as by copying the data and data fit tables into Excel sheets. Two-dimensional error-surface projections and covariance matrices were saved as text files.
 
 ## Import the data
+Import ITC data in Folder */data_itc*
 
 ```{r importNitpic}
-nitpiclist_itc = list.files(path = "./nitpic_sedphat_output", pattern = "*", recursive = TRUE, include.dirs = TRUE, full.names = TRUE)
+nitpiclist_itc = list.files(path = "./data_itc", pattern = "*", recursive = TRUE, include.dirs = TRUE, full.names = TRUE)
 nitpiclist_itc.tib <- as_tibble(nitpiclist_itc)
 nitpiclist_itc.all <- nitpiclist_itc.tib %>% dplyr::mutate(., datatype = str_extract(value, "Covariance|dHvsKab|xls|data.txt|error.txt|fit.txt|\\.nitpic|error-dat|confidence|(.xp)$")) %>% drop_na(datatype) %>% dplyr::mutate(., datatype_corr = str_extract(datatype, "Covariance|dHvsKab|xls|nitpic|error-dat|data.txt|error.txt|fit.txt|confidence|xp")) %>% dplyr::select(., -datatype) %>% separate(., value, into = c("toptopfolger", "topfolder", "sedfolder", "subfolder", "dataname"), sep = "/", remove = FALSE) %>% dplyr::mutate(., detect_sym = str_detect(subfolder, "(^[:symbol:])|^[:punct:]")) %>% dplyr::mutate(., deleteme = case_when(datatype_corr =="xp" & detect_sym == "TRUE" ~ "TRUE", TRUE ~ "FALSE")) %>% dplyr::filter(., deleteme != "TRUE") %>% dplyr::select(., !c("toptopfolger", "topfolder", "sedfolder"))
 
@@ -540,3 +540,5 @@ dH in kcal/mole, Kd in uM.
 :::
 
 Plots were saved as postscript files, and edited into publication-quality figures using Adobe Illustrator.
+
+The bookdown document was created based on [bookdown](https://bookdown.org/yihui/bookdown/), and [rtemps](https://github.com/bblodfon/rtemps).
