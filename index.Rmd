@@ -13,7 +13,7 @@ link-citations: yes
 ---
 
 # Info about ITC analysis script
-ITC data associated with [Caprin-1 binding to the critical stress granule protein G3BP1 is influenced by pH](to be linked). Data were first analyzed using the Malvern [software](https://www.malvernpanalytical.com/en/learn/knowledge-center/user-manuals/MAN0576EN). Final global fits were obtained using [NITPIC](https://www.utsouthwestern.edu/labs/mbr/software/) and  [SEDPHAT](http://www.analyticalultracentrifugation.com/sedphat/).  
+ITC data deposited as Suppplemental data on [DRYAD](https://doi.org/10.5061/dryad.k98sf7mb8). Data were analyzed using [NITPIC](https://www.utsouthwestern.edu/labs/mbr/software/) and  [SEDPHAT](http://www.analyticalultracentrifugation.com/sedphat/).  
 
 # Load libraries
 ```{r ini,message=FALSE, include=TRUE, echo = FALSE, warning=FALSE}
