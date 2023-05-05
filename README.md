@@ -6,6 +6,8 @@ Final analysis and global fits were performed using NITPIC and Sedphat (Brautiga
 
 folder comprising the ITC data: data_itc
 
+data_octet folder comprises some data exported from the BLI analysis for comparisons 
+
 Data can also be re-opened in Sedphat.
 
 Clone the repository and run index.rmd in Rstudio to re-run the script.
