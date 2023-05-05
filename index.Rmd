@@ -49,7 +49,6 @@ library(ggridges)
 library(svglite)
 ```
 
-
 # Visualization of ITC data
 
 The nitpic-processed data were saved and opened in Sedphat for global fitting. The fitted data were saved using the option "copy all data and save as new config" as well as by copying the data and data fit tables into Excel sheets. Two-dimensional error-surface projections and covariance matrices were saved as text files.
